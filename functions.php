@@ -98,3 +98,13 @@ new Mx_Metaboxes_Class(
 		'metabox_type'	=> 'image'
 	]
 );
+
+// video upload
+new Mx_Metaboxes_Class(
+	[
+		'id'			=> 'featured-video-metabox',
+		'post_types' 	=> 'video_testimonials',
+		'name'			=> esc_html( 'Video Upload', 'mx-domain' ),
+		'metabox_type'	=> 'video'
+	]
+);

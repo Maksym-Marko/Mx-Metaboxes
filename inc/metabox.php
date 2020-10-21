@@ -106,6 +106,11 @@ class Mx_Metaboxes_Class
 				// image id
 				$value = sanitize_text_field( $_POST[ $this->args['post_meta_key'] ] );
 
+			elseif( $this->args['metabox_type'] == 'video' ) :
+
+				// video id
+				$value = sanitize_text_field( $_POST[ $this->args['post_meta_key'] ] );
+
 			elseif( $this->args['metabox_type'] == 'radio' ) :
 
 				// radio value
@@ -230,6 +235,64 @@ class Mx_Metaboxes_Class
 						class="mx_upload_image_remove"
 						<?php echo $image_url == '' ? 'style="display: none;"' : ''; ?>
 					>Remove Image</a>
+
+				</div>
+
+			<!-- video -->
+			<?php elseif( $this->args['metabox_type'] == 'video' ) : ?>
+
+				<?php
+
+					$video_url = '';
+
+					if( $meta_value !== '' ) {
+
+						$video_url = wp_get_attachment_url( $meta_value );
+
+					}
+
+				?>
+
+				<!-- video upload -->
+				<div class="mx-video-uploader">
+
+					<button
+						class="mx_upload_video"
+						<?php echo $video_url !== '' ? 'style="display: none;"' : ''; ?>
+					>Choose Video</button>				
+
+					<!-- here we will save an id of video -->
+					<input
+						name="<?php echo esc_attr( $this->args['post_meta_key'] ); ?>"
+						id="<?php echo esc_attr( $this->args['post_meta_key'] ); ?>"
+						type="hidden"
+						class="mx_upload_video_save"
+						value="<?php echo $meta_value; ?>"
+					/>
+
+					<!-- show an video -->
+
+					<video
+						width="400"
+						class="video-wrapper"
+						autoplay loop
+						<?php echo $video_url == '' ? 'style="display: none;"' : ''; ?>
+					>
+						<source
+							src="<?php echo $video_url !== '' ? $video_url : ''; ?>"					
+							style="width: 300px;"
+							alt=""
+							class="mx_upload_video_show"						
+							type="video/mp4"
+						/>
+					Your browser does not support the video tag.</video>
+
+					<!-- remove video -->
+					<a
+						href="#"
+						class="mx_upload_video_remove"
+						<?php echo $video_url == '' ? 'style="display: none;"' : ''; ?>
+					>Remove video</a>
 
 				</div>
 

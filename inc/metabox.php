@@ -19,6 +19,8 @@ class Mx_Metaboxes_Class
 			'post_types' 	=> 'page', // ['page', 'post']
 			'name'			=> esc_html( 'Extra metabox 1', 'mx-domain' ),
 			'metabox_type'	=> 'input-text',
+			'context' 		=> 'normal', // normal, side or advanced 
+			'priority' 		=> 'high', // high, low, core, default
 				'options' 	=> []
 		];
 
@@ -66,8 +68,8 @@ class Mx_Metaboxes_Class
 			$this->args['name'],
 			[ $this, 'meta_box_content' ],
 			$this->args['post_types'],
-			'normal'
-			// 'low'
+			$this->args['context'],
+			$this->args['priority']
 		);
 	}
 

@@ -105,6 +105,8 @@ new Mx_Metaboxes_Class(
 		'id'			=> 'featured-video-metabox',
 		'post_types' 	=> 'video_testimonials',
 		'name'			=> esc_html( 'Video Upload', 'mx-domain' ),
-		'metabox_type'	=> 'video'
+		'metabox_type'	=> 'video',
+		'context' 		=> 'side',
+		'priority' 		=> 'low'
 	]
 );

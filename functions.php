@@ -103,10 +103,20 @@ new Mx_Metaboxes_Class(
 new Mx_Metaboxes_Class(
 	[
 		'id'			=> 'featured-video-metabox',
-		'post_types' 	=> 'video_testimonials',
+		'post_types' 	=> 'page',
 		'name'			=> esc_html( 'Video Upload', 'mx-domain' ),
 		'metabox_type'	=> 'video',
 		'context' 		=> 'side',
 		'priority' 		=> 'low'
+	]
+);
+
+// save HTML
+new Mx_Metaboxes_Class(
+	[
+		'id'			=> 'some-html-to-save',
+		'post_types' 	=> 'page',
+		'name'			=> esc_html( 'Save HTML', 'mx-domain' ),
+		'metabox_type'	=> 'html'
 	]
 );

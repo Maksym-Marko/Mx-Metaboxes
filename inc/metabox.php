@@ -103,6 +103,12 @@ class Mx_Metaboxes_Class
 				// textarea field
 				$value = sanitize_textarea_field( $_POST[ $this->args['post_meta_key'] ] );
 
+			elseif( $this->args['metabox_type'] == 'html' ) :
+
+				// textarea field (save HTML)
+				$value = htmlspecialchars( $_POST[ $this->args['post_meta_key'] ] );
+				// use "htmlspecialchars_decode()" to decode
+
 			elseif( $this->args['metabox_type'] == 'image' ) :
 
 				// image id
@@ -187,6 +193,11 @@ class Mx_Metaboxes_Class
 				/>
 
 			<?php elseif( $this->args['metabox_type'] == 'textarea' ) : ?>
+
+				<!-- textarea field -->
+				<textarea name="<?php echo esc_attr( $this->args['post_meta_key'] ); ?>" id="<?php echo esc_attr( $this->args['post_meta_key'] ); ?>" cols="30" rows="10"><?php echo $meta_value; ?></textarea>
+
+			<?php elseif( $this->args['metabox_type'] == 'html' ) : ?>
 
 				<!-- textarea field -->
 				<textarea name="<?php echo esc_attr( $this->args['post_meta_key'] ); ?>" id="<?php echo esc_attr( $this->args['post_meta_key'] ); ?>" cols="30" rows="10"><?php echo $meta_value; ?></textarea>

@@ -119,6 +119,11 @@ class Mx_Metaboxes_Class
 				// video id
 				$value = sanitize_text_field( $_POST[ $this->args['post_meta_key'] ] );
 
+			elseif( $this->args['metabox_type'] == 'document' ) :
+
+				// document id
+				$value = sanitize_text_field( $_POST[ $this->args['post_meta_key'] ] );
+
 			elseif( $this->args['metabox_type'] == 'radio' ) :
 
 				// radio value
@@ -308,7 +313,56 @@ class Mx_Metaboxes_Class
 					>Remove video</a>
 
 				</div>
+				
+			<?php elseif( $this->args['metabox_type'] == 'document' ) : ?>
 
+				<?php
+
+					$document_url = '';
+
+					if( $meta_value !== '' ) {
+
+						$document_url = wp_get_attachment_url( $meta_value );
+
+					}
+
+				?>
+
+				<!-- document upload -->
+				<div class="mx-document-uploader">
+
+					<button
+						class="mx_upload_document"
+						<?php echo $document_url !== '' ? 'style="display: none;"' : ''; ?>
+					>Choose Document</button>				
+
+					<!-- here we will save an id of document -->
+					<input
+						name="<?php echo esc_attr( $this->args['post_meta_key'] ); ?>"
+						id="<?php echo esc_attr( $this->args['post_meta_key'] ); ?>"
+						type="hidden"
+						class="mx_upload_document_save"
+						value="<?php echo $meta_value; ?>"
+					/>
+
+					<!-- show an document -->
+
+					<p 
+						class="mx_upload_document_show"
+						<?php echo $document_url == '' ? 'style="display: none;"' : ''; ?>
+					>
+						<?php echo $document_url !== '' ? $document_url : ''; ?>
+					</p>
+
+					<!-- remove document -->
+					<a
+						href="#"
+						class="mx_upload_document_remove"
+						<?php echo $document_url == '' ? 'style="display: none;"' : ''; ?>
+					>Remove document</a>
+
+				</div>
+				
 			<?php elseif( $this->args['metabox_type'] == 'radio' ) : ?>
 
 				<?php				

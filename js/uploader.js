@@ -1,6 +1,8 @@
 jQuery( document ).ready( function( $ ) {
 
-	// upload image
+	/**
+	* Image upload 
+	*/ 
 	$( '.mx_upload_image' ).on( 'click', function( e ) {
 
 		var mx_upload_button = $( this );
@@ -14,7 +16,7 @@ jQuery( document ).ready( function( $ ) {
 			return;
 		}
 
-		frame = wp.media.frames.customBackground = wp.media({
+		frame = wp.media({
 
 			title: 'choose image',
 
@@ -81,7 +83,9 @@ jQuery( document ).ready( function( $ ) {
 
 	} );
 
-	// video upload
+	/**
+	* Video upload
+	*/
 	$( '.mx_upload_video' ).on( 'click', function( e ) {
 
 		var mx_upload_button = $( this );
@@ -95,7 +99,7 @@ jQuery( document ).ready( function( $ ) {
 			return;
 		}
 
-		frame = wp.media.frames.customBackground = wp.media({
+		frame = wp.media({
 
 			title: 'choose video',
 
@@ -158,6 +162,88 @@ jQuery( document ).ready( function( $ ) {
 
 		// show "Upload button"
 		remove_button.parent().find( '.mx_upload_video' ).show();
+
+		// hide "remove" button
+		remove_button.hide();
+
+	} );
+
+	/**
+	* Document upload
+	*/
+	$( '.mx_upload_document' ).on( 'click', function( e ) {
+
+		var mx_upload_button = $( this );
+
+		e.preventDefault();
+
+		var frame;
+
+		if ( frame ) {
+			frame.open();
+			return;
+		}
+
+		frame = wp.media({
+
+			title: 'choose document',
+
+			library: {
+			},
+
+			button: {
+
+				text: 'Upload'
+			},
+
+			multyple: false
+		});
+
+
+		frame.on( 'select', function() {
+
+			var attachment = frame.state().get('selection').first();
+
+			// and show the document's data
+			var document_id = attachment.id;
+
+			var document_url = attachment.attributes.url;
+
+			// pace an id
+			mx_upload_button.parent().find( '.mx_upload_document_save' ).val( document_id );
+
+			// show an document
+			mx_upload_button.parent().find( '.mx_upload_document_show' ).text( document_url );
+				mx_upload_button.parent().find( '.mx_upload_document_show' ).show();
+
+			// show "remove button"
+			mx_upload_button.parent().find( '.mx_upload_document_remove' ).show();
+
+			// hide "upload" button
+			mx_upload_button.hide();
+
+		} );
+
+		frame.open();
+
+	} );
+
+	// remove document
+	$( '.mx_upload_document_remove' ).on( 'click', function( e ) {
+
+		var remove_button = $( this );
+
+		e.preventDefault();
+
+		// remove an id
+		remove_button.parent().find( '.mx_upload_document_save' ).val( '' );
+
+		// hide an document
+		remove_button.parent().find( '.mx_upload_document_show' ).text( '' );
+			remove_button.parent().find( '.mx_upload_document_show' ).hide();
+
+		// show "Upload button"
+		remove_button.parent().find( '.mx_upload_document' ).show();
 
 		// hide "remove" button
 		remove_button.hide();

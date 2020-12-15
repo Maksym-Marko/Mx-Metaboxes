@@ -2,9 +2,9 @@
 
 require get_template_directory() . '/mx-metabox/inc/metabox.php';
 
-require get_template_directory() . '/mx-metabox/inc/metabox-image-upload.php';
+require get_template_directory() . '/mx-metabox/inc/metabox-uploader.php';
 
-Mx_Metaboxes_Image_Upload_Class::register_scrips();
+Mx_Metaboxes_Uploader_Class::register_scrips();
 
 // add text input
 new Mx_Metaboxes_Class(
@@ -118,5 +118,15 @@ new Mx_Metaboxes_Class(
 		'post_types' 	=> 'page',
 		'name'			=> esc_html( 'Save HTML', 'mx-domain' ),
 		'metabox_type'	=> 'html'
+	]
+);
+
+// Document upload
+new Mx_Metaboxes_Class(
+	[
+		'id'			=> 'featured-document-metabox',
+		'post_types' 	=> 'documents',
+		'name'			=> esc_html( 'Document Upload', 'mx-domain' ),
+		'metabox_type'	=> 'document'
 	]
 );

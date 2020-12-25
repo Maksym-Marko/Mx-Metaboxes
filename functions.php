@@ -130,3 +130,42 @@ new Mx_Metaboxes_Class(
 		'metabox_type'	=> 'document'
 	]
 );
+
+/**
+* multibox
+*/
+require get_template_directory() . '/mx-metabox/inc/multibox.php';
+
+	$multibox = new Mx_Multibox_Class(
+		[
+			'id'			=> 'text-metabox-multibox',
+			'post_types' 	=> 'page',
+			'name'			=> esc_html( 'MultiBox', 'mx-domain' ),
+			'blocks' 		=> [
+
+				// block 1
+				'block_1' 		=> [
+					[
+						'type' => 'input-text',
+						'label' => esc_html( 'Enter Title', 'mx-domain' ),
+					],
+					[
+						'type' => 'textarea',
+						'label' => esc_html( 'Enter the text', 'mx-domain' ),
+					]
+				],
+
+				// block 2
+				'block_2' 		=> [
+					[
+						'type' => 'input-text2',
+						'label' => esc_html( 'Enter Title', 'mx-domain' ),
+					]
+				]
+
+			]
+			
+		]
+	);
+
+	$multibox->register_scrips();

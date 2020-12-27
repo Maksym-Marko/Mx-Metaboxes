@@ -18,17 +18,56 @@
 
 			<div>
 
-				<label :for="id + '_input-text'">{{ attrs.label }}</label>
+				<label :for="id + prefix">{{ attrs.label }}</label>
 
 				<input
 					type="text"
-					:id="id + '_input-text'"
-					:name="id + '_input-text'"
+					:id="id + prefix"
+					:name="id + prefix"
+					v-model="input_text"
+					class="mx-data-input"
 				/>
 
 			</div>
 
-		`
+		`,
+		data() {
+
+			return {
+
+				input_text: ''
+
+			}
+			
+		},
+		watch: {
+
+			input_text() {
+
+				let _this = this
+
+				let id = this.id + this.prefix
+
+				let _data = {
+					value: _this.input_text,
+					id: id
+				}
+
+				this.$emit( 'data-input', _data )
+
+			}
+
+		},
+
+		computed: {
+
+			prefix() {
+
+				return '_input-text'
+
+			}
+
+		}
 
 	} )
 
@@ -50,17 +89,55 @@
 			<div>
 
 				<label 
-					:for="id + '_input-text'"
+					:for="id + 'prefix'"
 				>{{ attrs.label }}</label>
 
 				<textarea
-					:id="id + '_input-text'"
-					:name="id + '_input-text'"
+					:id="id + prefix"
+					:name="id + 'prefix'"
+					v-model="mx_textarea"
+					class="mx-data-input"
 				></textarea>
 
 			</div>
+		`,
+		data() {
 
-		`
+			return {
+
+				mx_textarea: ''
+
+			}
+			
+		},
+		watch: {
+
+			mx_textarea() {
+
+				let _this = this
+
+				let id = this.id + this.prefix
+
+				let _data = {
+					value: _this.mx_textarea,
+					id: id
+				}
+
+				this.$emit( 'data-input', _data )
+
+			}
+
+		},
+
+		computed: {
+
+			prefix() {
+
+				return '_textarea'
+
+			}
+
+		}
 
 	} )
 
@@ -94,17 +171,22 @@ Vue.component( 'multibox_element',
 						v-if="_attributes.type === 'input-text'"
 						:attrs="_attributes"
 						:id="id"
+						@data-input="data_input"
 					></mx-input-text>
 
 					<mx-textarea
 						v-if="_attributes.type === 'textarea'"
 						:attrs="_attributes"
 						:id="id"
+						@data-input="data_input"
 					></mx-textarea>
 
 
 				</div>
-				<div v-else>
+				<div 
+					class="mx-failed"
+					v-else
+				>
 
 					<h3>This type doesn't exists.</h3>
 					<b>{{_attributes}}</b>
@@ -125,11 +207,11 @@ Vue.component( 'multibox_element',
 		},
 		methods: {
 
-			// set_id() {
+			data_input( _data_obj ) {
 
-			// 	return 
+				this.$emit( 'data-input', _data_obj )
 
-			// }
+			}
 
 		},
 		mounted() {
@@ -144,7 +226,9 @@ Vue.component( 'multibox_element',
 
 					return true
 
-				}	
+				}
+
+				this.$emit( 'errors', 'This type doesnt exists.' )
 
 				return false
 
@@ -167,40 +251,154 @@ Vue.component( 'multibox_block',
 
 			<div 
 				class="mx-multibox_wrap"
-				:style="styles"
 				:id="elements[0]"
 			>
 
 				<div
-					v-for="index in clone"
-					:class="[index > 1 ? 'mx-cloned-element' : 'mx-origin-element']"
+					v-for="_index in number_of_elements"
+					:class="[_index > 1 ? 'mx-child-element' : 'mx-origin-element']"
 				>
 
 					<multibox_element
 						v-for="(element, index) in elements"
+						:key="index"
 						:_attributes="element"
 						v-if="typeof element !== 'string'"
-						:id="'element_of_' + elements[0] + index"
+						:id="'element_of_' + elements[0] + '_' + index + '_el_' + _index"
+						@errors="set_error"
+						@data-input="set_data_input"
 					></multibox_element>
 
 				</div>
+
+				<button
+					class="mx-add-block"
+					@click.prevent="add_block"
+					v-if="errors.length === 0"
+				>Add</button>
 
 			</div>
 
 		`,
 		data() {
 			return {
-				styles: {
-					border: 		'1px solid #ccd0d4',
-					marginBottom: 	'15px',
-					padding: 		'10px'
-				},
 				id: 0,
-				clone: 1
+				number_of_elements: 1,
+				errors: [],
+				block: [],
+
+				_set_timeout: null,
+
+				exists: false
 			}
 		},
-		computed: {
+		methods: {
 
+			set_data_input( _obj ) {
+
+				let _this = this
+
+				clearTimeout( _this._set_timeout )
+
+				this._set_timeout = setTimeout( function() {
+
+					_this.id_exists( _obj.id )
+
+					if( _this.exists ) {
+
+						_this.update_obj( _obj.id, _obj.value )
+
+						_this.exists = false
+
+					} else {
+
+						_this.block.push( _obj )
+						
+
+					}				
+			
+				}, 500 )
+
+			},
+
+			update_obj( _id, _value ) {
+
+				let _this = this
+
+				this.block.forEach( function( value, index ) {
+
+					if( value.id === _id ) {
+
+						_this.block[index]['value'] = _value
+
+					}
+
+				} )	
+
+			},
+
+			id_exists( _id ) {
+
+				let _incr = 0
+
+				let _this = this
+
+				this.block.forEach( function( value, index ) {
+
+					_incr++
+
+					if( typeof value === 'object' ) {
+
+						if( value.id === _id ) {
+
+							_this.exists = true
+
+						}					
+
+					}
+
+				} )				
+
+			},
+
+			add_block() {
+
+				this.number_of_elements += 1
+
+			},
+
+			set_error( _error ) {
+
+				this.errors.push( _error )
+
+			}, 
+
+			block_init() {
+
+				this.block.push( this.elements[0] )
+
+			}
+
+		},
+		mounted() {
+
+			this.block_init()
+
+		},
+		watch: {
+
+
+			block: {
+
+				handler: function( _value ) {
+
+				 	this.$emit( 'data-output', this.block )			 					 		
+
+	            },
+
+	            deep: true
+
+			}
 		}
 	}
 )
@@ -210,7 +408,75 @@ let app = new Vue( {
 
 	el: '#mx_multibox',
 	data: {
-		multiboxes: mx_multiboxes
+		multiboxes: mx_multiboxes,
+		data_output: [],
+
+		exists: false
+	},
+	methods: {
+
+		set_data_output( _array ) {
+
+			if( this.data_output < 1 ) {
+
+				this.data_output.push( _array )
+
+			}
+
+			this.id_exists( _array[0] )
+
+			if( this.exists ) {
+
+				// this.element_update( _array )
+
+			}
+
+		},
+
+		id_exists( _id ) {
+
+			let _incr = 0
+
+			let _this = this
+
+			this.data_output.forEach( function( value, index ) {
+
+				_incr++
+
+				if( typeof value === 'object' ) {
+
+					if( value.id === _id ) {
+
+						_this.exists = true
+
+					}					
+
+				}
+
+			} )				
+
+		},
+
+		// element_update( _array ) {
+
+		// 	let _this = this
+
+		// 	this.data_output.forEach( function( value, index ) {
+
+		// 		if( typeof value === 'object' ) {
+
+		// 			if( value.id === _array[0] ) {
+
+		// 				_this.exists = false
+
+		// 			}
+
+		// 		}
+
+		// 	} )
+
+		// }
+
 	}
 
 } )

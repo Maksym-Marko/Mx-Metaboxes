@@ -134,7 +134,7 @@ new Mx_Metaboxes_Class(
 /**
 * multibox
 */
-require get_template_directory() . '/mx-metabox/inc/multibox.php';
+require get_template_directory() . '/inc/mx-metabox/inc/multibox.php';
 
 	$multibox = new Mx_Multibox_Class(
 		[
@@ -158,8 +158,8 @@ require get_template_directory() . '/mx-metabox/inc/multibox.php';
 				// block 2
 				'block_2' 		=> [
 					[
-						'type' => 'input-text2',
-						'label' => esc_html( 'Enter Title', 'mx-domain' ),
+						'type' => 'input-text',
+						'label' => esc_html( 'Enter Title 2', 'mx-domain' ),
 					]
 				]
 

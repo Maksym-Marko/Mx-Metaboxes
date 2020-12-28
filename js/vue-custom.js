@@ -417,17 +417,11 @@ let app = new Vue( {
 
 		set_data_output( _array ) {
 
-			if( this.data_output < 1 ) {
-
-				this.data_output.push( _array )
-
-			}
-
 			this.id_exists( _array[0] )
 
-			if( this.exists ) {
+			if( ! this.exists ) {
 
-				// this.element_update( _array )
+				this.data_output.push( _array )		
 
 			}
 
@@ -445,7 +439,7 @@ let app = new Vue( {
 
 				if( typeof value === 'object' ) {
 
-					if( value.id === _id ) {
+					if( value[0] === _id ) {
 
 						_this.exists = true
 
@@ -455,27 +449,7 @@ let app = new Vue( {
 
 			} )				
 
-		},
-
-		// element_update( _array ) {
-
-		// 	let _this = this
-
-		// 	this.data_output.forEach( function( value, index ) {
-
-		// 		if( typeof value === 'object' ) {
-
-		// 			if( value.id === _array[0] ) {
-
-		// 				_this.exists = false
-
-		// 			}
-
-		// 		}
-
-		// 	} )
-
-		// }
+		}
 
 	}
 

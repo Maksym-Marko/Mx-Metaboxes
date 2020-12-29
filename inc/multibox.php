@@ -7,6 +7,35 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class Mx_Multibox_Class extends Mx_Metaboxes_Class
 {
 
+	// convert data
+	public function convert_multibox()
+	{
+
+		add_action( 'wp_ajax_mx_convert_multibox', [$this, 'mx_convert_multibox'] );
+
+	}
+
+		public function mx_convert_multibox()
+		{
+
+			if( empty( $_POST['nonce'] ) ) wp_die();
+
+			if( wp_verify_nonce( $_POST['nonce'], 'mx_nonce_multibox' ) ) {
+
+				$input_data = str_replace( '\\', '', $_POST['data'] );
+
+				$json_data = json_decode( $input_data );
+
+				$serialized_data = maybe_serialize( $json_data );
+
+				echo $serialized_data;
+
+				wp_die();
+
+			}
+
+		}
+
 	// metabox content
 	public function meta_box_content( $post, $meta )
 	{
@@ -62,8 +91,10 @@ class Mx_Multibox_Class extends Mx_Metaboxes_Class
 			<div id="mx_multibox">
 				
 				<multibox_block
-					v-for="block in multiboxes"
+					v-for="(block, index) in multiboxes"
 					:elements="block"
+					:key="index"
+					@data-output="set_data_output"
 				></multibox_block>
 
 			</div>
@@ -121,7 +152,19 @@ class Mx_Multibox_Class extends Mx_Metaboxes_Class
 			// wp_enqueue_script( 'mx-vue-js', get_bloginfo( 'template_url' ) . '/inc/mx-metabox/js/vue-production.js', [], '2', true );
 
 			// Vue.js custom
-			wp_enqueue_script( 'mx-vue-js-custom', get_bloginfo( 'template_url' ) . '/inc/mx-metabox/js/vue-custom.js', [ 'mx-vue-js', 'jquery' ], time(), true );			
+			wp_enqueue_script( 'mx-vue-js-custom', get_bloginfo( 'template_url' ) . '/inc/mx-metabox/js/vue-custom.js', [ 'mx-vue-js', 'jquery' ], time(), true );
+
+			wp_localize_script( 'mx-vue-js-custom', 'mx_multibox_localize', 
+
+				[
+					'ajax_url' 			=> admin_url( 'admin-ajax.php' ),
+
+					'nonce' 			=> wp_create_nonce( 'mx_nonce_multibox' ),
+				]
+			);
+
+			// style 
+			wp_enqueue_style( 'mx-multibox-style', get_bloginfo( 'template_url' ) . '/inc/mx-metabox/css/multibox-style.css', [], time() ); 
 
 		}
 

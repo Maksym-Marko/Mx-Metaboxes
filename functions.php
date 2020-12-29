@@ -134,7 +134,7 @@ new Mx_Metaboxes_Class(
 /**
 * multibox
 */
-require get_template_directory() . '/inc/mx-metabox/inc/multibox.php';
+require get_template_directory() . '/mx-metabox/inc/multibox.php';
 
 	$multibox = new Mx_Multibox_Class(
 		[
@@ -169,3 +169,5 @@ require get_template_directory() . '/inc/mx-metabox/inc/multibox.php';
 	);
 
 	$multibox->register_scrips();
+
+	$multibox->convert_multibox();

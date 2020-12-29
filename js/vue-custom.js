@@ -1,5 +1,5 @@
 /*
-* Elements
+* Elements 
 */
 	// input-text
 	Vue.component( 'mx-input-text', {
@@ -415,6 +415,24 @@ let app = new Vue( {
 	},
 	methods: {
 
+		convert_data( _obj ) {
+
+			let json_data = JSON.stringify( _obj )
+
+			let data = {
+				action: 'mx_convert_multibox',
+				nonce: 	mx_multibox_localize.nonce,
+				data: 	json_data
+			}
+
+			jQuery.post( mx_multibox_localize.ajax_url, data, function( response ) {
+
+				console.log( response )
+
+			} )		
+
+		},
+
 		set_data_output( _array ) {
 
 			this.id_exists( _array[0] )
@@ -424,6 +442,8 @@ let app = new Vue( {
 				this.data_output.push( _array )		
 
 			}
+
+			this.convert_data( this.data_output )
 
 		},
 

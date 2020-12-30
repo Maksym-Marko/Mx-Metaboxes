@@ -170,4 +170,4 @@ require get_template_directory() . '/mx-metabox/inc/multibox.php';
 
 	$multibox->register_scrips();
 
-	$multibox->convert_multibox();
+	$multibox->ajax_multibox();

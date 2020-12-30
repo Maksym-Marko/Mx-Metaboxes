@@ -251,7 +251,7 @@ Vue.component( 'multibox_block',
 
 			<div 
 				class="mx-multibox_wrap"
-				:id="elements[0]"
+				:id="elements[0]"					
 			>
 
 				<div
@@ -409,13 +409,57 @@ let app = new Vue( {
 	el: '#mx_multibox',
 	data: {
 		multiboxes: mx_multiboxes,
+
 		data_output: [],
 
-		exists: false
+		saved_data: [],
+
+		exists: false,
+
+		metabox: mx_metabox_id,
+
+		serialized_data: mx_serialized_data,
+
+		errors: []
 	},
 	methods: {
 
+		match_saved_data() {
+
+			let _this = this
+
+			this.saved_data.forEach( function( element, index ) {
+
+				let static = _this.multiboxes[index]
+
+				let current = element
+
+				if( current[0] === static[0] ) {
+
+					console.log( _this.multiboxes[index], element )
+
+
+					// todo
+
+
+
+
+
+				} else {
+
+					_this.errors.push( 'Something went wrong with saved data.' )
+
+				}
+
+				console.log( current[0], static[0] )
+
+			} )
+
+		},
+
 		convert_data( _obj ) {
+
+			let _this = this
 
 			let json_data = JSON.stringify( _obj )
 
@@ -427,7 +471,7 @@ let app = new Vue( {
 
 			jQuery.post( mx_multibox_localize.ajax_url, data, function( response ) {
 
-				console.log( response )
+				jQuery( '#' + _this.metabox ).val( response )
 
 			} )		
 
@@ -469,7 +513,45 @@ let app = new Vue( {
 
 			} )				
 
+		},
+
+		decode_data() {
+
+			if( this.serialized_data !== '' ) {
+
+				let _this = this
+
+				let data = {
+					action: 			'mx_decode_multibox',
+					nonce: 				mx_multibox_localize.nonce,
+					serialized_data: 	_this.serialized_data
+				}
+
+				jQuery.post( mx_multibox_localize.ajax_url, data, function( response ) {
+
+					_this.saved_data = JSON.parse( response )
+
+				} )	
+
+			}
+
 		}
+
+	},
+
+	watch: {
+
+		saved_data() {
+
+			this.match_saved_data()
+
+		}
+
+	},
+
+	mounted() {
+
+		this.decode_data()
 
 	}
 

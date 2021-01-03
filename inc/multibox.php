@@ -141,7 +141,7 @@ class Mx_Multibox_Class extends Mx_Metaboxes_Class
 					>
 						
 						<multibox_block
-							v-for="(block, index) in multiboxes"
+							v-for="(block, index) in saved_data"
 							:elements="block"
 							:key="index"
 							@data-output="set_data_output"
@@ -162,6 +162,8 @@ class Mx_Multibox_Class extends Mx_Metaboxes_Class
 						</p>
 
 					</div>
+
+					<h1>Nested of elements</h1>
 									
 					
 				</div>				

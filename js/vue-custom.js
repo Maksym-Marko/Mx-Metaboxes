@@ -18,12 +18,12 @@
 
 			<div>
 
-				<label :for="id + prefix">{{ attrs.label }}</label>
+				<label :for="set_id">{{ attrs.label }}</label>
 
 				<input
 					type="text"
-					:id="id + prefix"
-					:name="id + prefix"
+					:id="set_id"
+					:name="set_id"
 					v-model="input_text"
 					class="mx-data-input"
 				/>
@@ -40,6 +40,25 @@
 			}
 			
 		},
+
+		methods: {
+
+			set_value() {
+
+				if( this.attrs.value ) {
+
+					return this.attrs.value
+
+				} else {
+
+					return ''
+
+				}
+
+			},
+
+		},
+
 		watch: {
 
 			input_text() {
@@ -50,7 +69,9 @@
 
 				let _data = {
 					value: _this.input_text,
-					id: id
+					id: id,
+					label: _this.attrs.label,
+					type: 'input-text'
 				}
 
 				this.$emit( 'data-input', _data )
@@ -61,11 +82,31 @@
 
 		computed: {
 
+			set_id() {
+
+				if( this.attrs.value ) {
+
+					return this.attrs.id
+
+				} else {
+
+					return this.id + this.prefix
+
+				}				
+
+			},
+
 			prefix() {
 
 				return '_input-text'
 
 			}
+
+		},
+
+		mounted() {
+
+			this.input_text = this.set_value()
 
 		}
 
@@ -89,12 +130,12 @@
 			<div>
 
 				<label 
-					:for="id + 'prefix'"
+					:for="set_id"
 				>{{ attrs.label }}</label>
 
 				<textarea
-					:id="id + prefix"
-					:name="id + 'prefix'"
+					:id="set_id"
+					:name="set_id"
 					v-model="mx_textarea"
 					class="mx-data-input"
 				></textarea>
@@ -110,6 +151,23 @@
 			}
 			
 		},
+		methods: {
+
+			set_value() {
+
+				if( this.attrs.value ) {
+
+					return this.attrs.value
+
+				} else {
+
+					return ''
+
+				}
+
+			},
+
+		},
 		watch: {
 
 			mx_textarea() {
@@ -120,7 +178,9 @@
 
 				let _data = {
 					value: _this.mx_textarea,
-					id: id
+					id: id,
+					label: _this.attrs.label,
+					type: 'textarea'
 				}
 
 				this.$emit( 'data-input', _data )
@@ -129,13 +189,33 @@
 
 		},
 
-		computed: {
+		computed: {			
+
+			set_id() {
+
+				if( this.attrs.value ) {
+
+					return this.attrs.id
+
+				} else {
+
+					return this.id + this.prefix
+
+				}				
+
+			},
 
 			prefix() {
 
 				return '_textarea'
 
 			}
+
+		},
+
+		mounted() {
+
+			this.mx_textarea = this.set_value()
 
 		}
 
@@ -152,6 +232,12 @@ Vue.component( 'multibox_element',
 				required: true
 			},
 			id: {
+				required: true
+			},
+			element: {
+				required: true
+			},
+			index_of_element: {
 				required: true
 			}
 		},
@@ -181,7 +267,6 @@ Vue.component( 'multibox_element',
 						@data-input="data_input"
 					></mx-textarea>
 
-
 				</div>
 				<div 
 					class="mx-failed"
@@ -209,6 +294,10 @@ Vue.component( 'multibox_element',
 
 			data_input( _data_obj ) {
 
+				_data_obj.element = this.element
+
+				_data_obj._index = this.index_of_element
+
 				this.$emit( 'data-input', _data_obj )
 
 			}
@@ -218,7 +307,7 @@ Vue.component( 'multibox_element',
 
 
 		},
-		computed: {
+		computed: {			
 
 			checkElementType() {
 
@@ -264,9 +353,11 @@ Vue.component( 'multibox_block',
 						:key="index"
 						:_attributes="element"
 						v-if="typeof element !== 'string'"
-						:id="'element_of_' + elements[0] + '_' + index + '_el_' + _index"
+						:id="set_id(elements, index, _index)"
+						:element="_index"
 						@errors="set_error"
 						@data-input="set_data_input"
+						:index_of_element="index"
 					></multibox_element>
 
 				</div>
@@ -289,10 +380,18 @@ Vue.component( 'multibox_block',
 
 				_set_timeout: null,
 
-				exists: false
+				exists_element: false,
+
+				exists_input: false
 			}
 		},
 		methods: {
+
+			set_id( elements, index, _index ) {
+
+				return 'element_of_' + elements[0] + '_' + index + '_el_' + _index
+
+			},
 
 			set_data_input( _obj ) {
 
@@ -302,64 +401,188 @@ Vue.component( 'multibox_block',
 
 				this._set_timeout = setTimeout( function() {
 
-					_this.id_exists( _obj.id )
+					_this.id_element_exists( _obj.element )
 
-					if( _this.exists ) {
+					if( _this.exists_element ) {
 
-						_this.update_obj( _obj.id, _obj.value )
+						// console.log( 'element need to update' )
+						// update element
+						_this.id_input_exists( _obj.element, _obj._index )
 
-						_this.exists = false
+						// check the index
+						if( _this.exists_input ) {
+
+							_this.update_input( _obj.element, _obj )
+
+							_this.exists_input = false
+
+						} else {
+
+							_this.add_input( _obj.element, _obj )
+
+						}
+
+						_this.exists_element = false
 
 					} else {
 
-						_this.block.push( _obj )
-						
+						// console.log( 'create element ' )
 
-					}				
+						let new_element = {
+							[_obj.element]: {
+								[_obj._index]: _obj
+							}
+						}
+
+						_this.block.push( new_element )
+
+					}
+
+
+
+
+
+
+					// if( _this.exists_input ) {
+
+					// 	// _this.update_obj( _obj.id, _obj.value )
+
+					// 	_this.exists_input = false
+
+					// } else {
+
+					// 	// check elemen exists
+					// 	_this.id_exists_element( _obj.element )
+
+					// 	if( _this.exists_element ) {
+
+					// 		// just updata
+					// 		console.log( 'Need update' )
+					// 		// _this.exists_element = false
+
+					// 	} else {
+
+					// 		// create
+					// 		let element_obj = {
+
+					// 			[_obj.element]: [
+					// 				_obj
+					// 			]
+
+					// 		}
+					// 		_this.block.push( element_obj )
+
+					// 	}						
+
+					// }				
 			
 				}, 500 )
 
 			},
 
-			update_obj( _id, _value ) {
+			update_input( element_id, _obj ) {
 
-				let _this = this
-
-				this.block.forEach( function( value, index ) {
-
-					if( value.id === _id ) {
-
-						_this.block[index]['value'] = _value
-
-					}
-
-				} )	
+				this.block[_obj.element][element_id][_obj._index] = _obj
 
 			},
 
-			id_exists( _id ) {
+			add_input( element_id, _obj ) {
 
-				let _incr = 0
+				this.block[_obj.element][element_id][_obj._index] = _obj
+
+			},
+
+			id_input_exists( element_id, input_id ) {
+
+				let _this = this
+
+				if( this.block[1][element_id] ) {
+
+					for( const [key, value] of Object.entries( this.block[element_id] ) ) {
+
+						for( const [_key, _value] of Object.entries( value ) ) {
+
+							if( parseInt( _key ) === parseInt( input_id ) ) {
+
+								_this.exists_input = true
+
+							}
+
+						}
+
+					}
+
+				}
+				
+				
+
+			},
+
+			id_element_exists( _id ) {
 
 				let _this = this
 
 				this.block.forEach( function( value, index ) {
-
-					_incr++
 
 					if( typeof value === 'object' ) {
 
-						if( value.id === _id ) {
+						for( const [_key, _value] of Object.entries( value ) ) {
 
-							_this.exists = true
+							if( parseInt( _key ) === parseInt( _id ) ) {
 
-						}					
+								_this.exists_element = true
+
+							}
+
+						}
 
 					}
 
-				} )				
+				} )
 
 			},
+
+			// update_obj( _id, _value ) {
+
+			// 	let _this = this
+
+			// 	this.block.forEach( function( value, index ) {
+
+			// 		if( value.id === _id ) {
+
+			// 			_this.block[index]['value'] = _value
+
+			// 		}
+
+			// 	} )	
+
+			// },
+
+			// id_exists_element( _id ) {
+
+			// 	let _this = this
+
+			// 	this.block.forEach( function( value, index ) {
+
+			// 		if( typeof value === 'object' ) {
+
+			// 			for( const [_key, _value] of Object.entries( value ) ) {
+
+			// 				if( _key === _id ) {
+
+			// 					_this.exists_element = true
+
+			// 				}
+
+			// 			}
+
+			// 		}
+
+			// 	} )	
+
+			// },
+
+			
 
 			add_block() {
 
@@ -399,6 +622,11 @@ Vue.component( 'multibox_block',
 	            deep: true
 
 			}
+		},
+		computed: {
+
+			
+
 		}
 	}
 )
@@ -436,7 +664,7 @@ let app = new Vue( {
 
 				if( current[0] === static[0] ) {
 
-					console.log( _this.multiboxes[index], element )
+					// console.log( _this.multiboxes[index], element )
 
 
 					// todo
@@ -450,8 +678,6 @@ let app = new Vue( {
 					_this.errors.push( 'Something went wrong with saved data.' )
 
 				}
-
-				console.log( current[0], static[0] )
 
 			} )
 

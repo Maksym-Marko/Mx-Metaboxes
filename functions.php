@@ -11,7 +11,8 @@ new Mx_Metaboxes_Class(
 	[
 		'id'			=> 'text-metabox',
 		'post_types' 	=> 'page',
-		'name'			=> esc_html( 'Text field', 'mx-domain' )
+		'name'			=> esc_html( 'Text field', 'mx-domain' ),
+		'default' 		=> 'News & Media'
 	]
 );
 

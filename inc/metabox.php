@@ -21,7 +21,8 @@ class Mx_Metaboxes_Class
 			'metabox_type'	=> 'input-text',
 			'context' 		=> 'normal', // normal, side or advanced 
 			'priority' 		=> 'high', // high, low, core, default
-				'options' 	=> []
+				'options' 	=> [],
+			'default' 		=> ''
 		];
 
 		$this->args = wp_parse_args( $args, $this->defaults );
@@ -83,7 +84,7 @@ class Mx_Metaboxes_Class
 			return;
 		}
 
-		$value = '';
+		$value = $this->args['default'];
 
 		if ( isset( $_POST ) && isset( $_POST[ $this->args['post_meta_key'] ] ) ) :
 
@@ -174,7 +175,15 @@ class Mx_Metaboxes_Class
 			$post->ID,
 			$this->args['post_meta_key'],
 			true
-		); ?>
+		); 
+
+		if( $meta_value == '' ) {
+
+			$meta_value = $this->args['default'];
+
+		}
+
+		?>
 
 		<p>
 			<label for="<?php echo esc_attr( $this->args['post_meta_key'] ); ?>"></label>

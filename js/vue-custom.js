@@ -35,7 +35,7 @@
 
 			return {
 
-				input_text: ''
+				input_text: null
 
 			}
 			
@@ -146,7 +146,7 @@
 
 			return {
 
-				mx_textarea: ''
+				mx_textarea: null
 
 			}
 			
@@ -334,6 +334,9 @@ Vue.component( 'multibox_block',
 			elements: {
 				type: Array,
 				required: true
+			},
+			saved: {
+				required: false
 			}
 		},
 		template: ` 
@@ -343,22 +346,53 @@ Vue.component( 'multibox_block',
 				:id="elements[0]"					
 			>
 
-				<div
-					v-for="_index in number_of_elements"
-					:class="[_index > 1 ? 'mx-child-element' : 'mx-origin-element']"
+				<div 
+					v-if="saved === true"					
 				>
 
-					<multibox_element
-						v-for="(element, index) in elements"
-						:key="index"
-						:_attributes="element"
-						v-if="typeof element !== 'string'"
-						:id="set_id(elements, index, _index)"
-						:element="_index"
-						@errors="set_error"
-						@data-input="set_data_input"
-						:index_of_element="index"
-					></multibox_element>
+					<div
+						v-for="_index in number_of_elements"
+						:class="[_index > 1 ? 'mx-child-element' : 'mx-origin-element']"
+					>
+
+						<multibox_element
+							v-for="(element, index) in saved_block"
+							:key="index"
+							:_attributes="element"
+							v-if="typeof element !== 'string' && element.element === _index"
+							:id="element.id"
+							:element="_index"
+							@errors="set_error"
+							@data-input="set_data_input"
+							:index_of_element="index"
+						></multibox_element>
+
+					</div>					
+
+				</div>
+				<div
+					v-else					
+				>
+
+					<div
+						class="mx-element"
+						v-for="_index in number_of_elements"
+						:class="[_index > 1 ? 'mx-child-element' : 'mx-origin-element']"
+					>
+
+						<multibox_element
+							v-for="(element, index) in elements"
+							:key="index"
+							:_attributes="element"
+							v-if="typeof element !== 'string'"
+							:id="'element_of_' + elements[0] + '_' + index + '_el_' + _index"
+							:element="_index"
+							@errors="set_error"
+							@data-input="set_data_input"
+							:index_of_element="index"
+						></multibox_element>
+
+					</div>
 
 				</div>
 
@@ -378,6 +412,8 @@ Vue.component( 'multibox_block',
 				errors: [],
 				block: [],
 
+				saved_block: [],
+
 				_set_timeout: null,
 
 				exists_element: false,
@@ -386,12 +422,6 @@ Vue.component( 'multibox_block',
 			}
 		},
 		methods: {
-
-			set_id( elements, index, _index ) {
-
-				return 'element_of_' + elements[0] + '_' + index + '_el_' + _index
-
-			},
 
 			set_data_input( _obj ) {
 
@@ -436,45 +466,7 @@ Vue.component( 'multibox_block',
 
 						_this.block.push( new_element )
 
-					}
-
-
-
-
-
-
-					// if( _this.exists_input ) {
-
-					// 	// _this.update_obj( _obj.id, _obj.value )
-
-					// 	_this.exists_input = false
-
-					// } else {
-
-					// 	// check elemen exists
-					// 	_this.id_exists_element( _obj.element )
-
-					// 	if( _this.exists_element ) {
-
-					// 		// just updata
-					// 		console.log( 'Need update' )
-					// 		// _this.exists_element = false
-
-					// 	} else {
-
-					// 		// create
-					// 		let element_obj = {
-
-					// 			[_obj.element]: [
-					// 				_obj
-					// 			]
-
-					// 		}
-					// 		_this.block.push( element_obj )
-
-					// 	}						
-
-					// }				
+					}			
 			
 				}, 500 )
 
@@ -487,6 +479,8 @@ Vue.component( 'multibox_block',
 			},
 
 			add_input( element_id, _obj ) {
+
+				console.log( _obj )
 
 				this.block[_obj.element][element_id][_obj._index] = _obj
 
@@ -512,9 +506,7 @@ Vue.component( 'multibox_block',
 
 					}
 
-				}
-				
-				
+				}				
 
 			},
 
@@ -542,48 +534,6 @@ Vue.component( 'multibox_block',
 
 			},
 
-			// update_obj( _id, _value ) {
-
-			// 	let _this = this
-
-			// 	this.block.forEach( function( value, index ) {
-
-			// 		if( value.id === _id ) {
-
-			// 			_this.block[index]['value'] = _value
-
-			// 		}
-
-			// 	} )	
-
-			// },
-
-			// id_exists_element( _id ) {
-
-			// 	let _this = this
-
-			// 	this.block.forEach( function( value, index ) {
-
-			// 		if( typeof value === 'object' ) {
-
-			// 			for( const [_key, _value] of Object.entries( value ) ) {
-
-			// 				if( _key === _id ) {
-
-			// 					_this.exists_element = true
-
-			// 				}
-
-			// 			}
-
-			// 		}
-
-			// 	} )	
-
-			// },
-
-			
-
 			add_block() {
 
 				this.number_of_elements += 1
@@ -596,9 +546,79 @@ Vue.component( 'multibox_block',
 
 			}, 
 
+			set_block_data() {
+
+				let _this = this			
+
+				this.block = []
+
+				this.block.push( this.saved_block[0] )
+
+				this.saved_block.forEach( function( value, index ) {
+
+					if( typeof value === 'object' ) {
+
+						// console.log(value )
+
+						// todo: create block array by saved_block array 
+
+
+
+
+
+
+
+
+
+
+
+					}
+
+				} )
+
+			},
+
 			block_init() {
 
-				this.block.push( this.elements[0] )
+				let _this = this
+
+				if( this.saved === true ) {					
+
+					this.number_of_elements = 0
+
+					this.saved_block.push( this.elements[0] )
+
+					this.elements.forEach( function( value, index ) {
+
+						if( typeof value === 'object' ) {
+
+							for( const [_key, _value] of Object.entries( value ) ) {
+
+								for( const [__key, __value] of Object.entries( _value ) ) {
+
+									_this.saved_block.push( __value )
+
+								}
+
+							}
+
+							_this.number_of_elements += 1
+
+						}
+
+					} )
+
+					setTimeout( function() {
+
+						_this.set_block_data();
+
+					}, 1000 )					
+
+				} else {
+
+					this.block.push( this.elements[0] )
+
+				}
 
 			}
 

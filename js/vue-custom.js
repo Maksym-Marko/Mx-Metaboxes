@@ -1,31 +1,52 @@
-/*
-* Elements 
-*/
-	// input-text
-	Vue.component( 'mx-input-text', {
+// input-text
+Vue.component( 'mx_input-text',
 
+	{
 		props: {
-			attrs: {
-				type: Object,
+
+			type: {
+				type: String,
 				required: true
 			},
-			id: {
+
+			block_name: {
+				type: String,
 				required: true
+			},
+
+			element_id: {
+				type: Number,
+				required: true
+			},
+
+			input_id: {
+				type: Number,
+				required: true
+			},
+
+			label: {
+				type: String,
+				required: true
+			},
+
+			value: {
+				type: String,
+				required: false
 			}
+
 		},
 
-		template: ` 
+		template: `
 
-			<div>
-
-				<label :for="set_id">{{ attrs.label }}</label>
+			<div
+				:class="'mx_' + type"
+			>
 
 				<input
 					type="text"
-					:id="set_id"
-					:name="set_id"
-					v-model="input_text"
-					class="mx-data-input"
+					:id="block_name + '_element_' + element_id + '_input_' + input_id"
+					:name="block_name + '_element_' + element_id + '_input_' + input_id"
+					v-model="input"
 				/>
 
 			</div>
@@ -35,70 +56,43 @@
 
 			return {
 
-				input_text: null
+				input: null
 
 			}
-			
+
 		},
 
 		methods: {
 
-			set_value() {
+			_emit_data() {
 
-				if( this.attrs.value ) {
+				let block_name = this.block_name
 
-					return this.attrs.value
+				let element_id = this.element_id
 
-				} else {
+				let input_id = this.input_id
 
-					return ''
+				let type = this.type
 
-				}
+				let value = this.input
 
-			},
+				this.$emit( 'input_data', {
+					block_name: block_name,
+					element_id: element_id,
+					input_id: input_id,
+					input_type: type,
+					value: value
+				} )
+
+			}
 
 		},
 
 		watch: {
 
-			input_text() {
+			input() {
 
-				let _this = this
-
-				let id = this.id + this.prefix
-
-				let _data = {
-					value: _this.input_text,
-					id: id,
-					label: _this.attrs.label,
-					type: 'input-text'
-				}
-
-				this.$emit( 'data-input', _data )
-
-			}
-
-		},
-
-		computed: {
-
-			set_id() {
-
-				if( this.attrs.value ) {
-
-					return this.attrs.id
-
-				} else {
-
-					return this.id + this.prefix
-
-				}				
-
-			},
-
-			prefix() {
-
-				return '_input-text'
+				this._emit_data()
 
 			}
 
@@ -106,699 +100,433 @@
 
 		mounted() {
 
-			this.input_text = this.set_value()
+			this.input = this.value
+
+			this._emit_data()
 
 		}
+	}
 
-	} )
+)
 
-	// textarea
-	Vue.component( 'mx-textarea', {
+// textarea
+Vue.component( 'mx_textarea',
 
+	{
 		props: {
+
+			type: {
+				type: String,
+				required: true
+			},
+
+			block_name: {
+				type: String,
+				required: true
+			},
+
+			element_id: {
+				type: Number,
+				required: true
+			},
+
+			input_id: {
+				type: Number,
+				required: true
+			},
+
+			label: {
+				type: String,
+				required: true
+			},
+
+			value: {
+				type: String,
+				required: false
+			}
+
+		},
+
+		template: `
+
+			<div
+				:class="'mx_' + type"
+			>
+
+				<textarea
+					:id="block_name + '_element_' + element_id + '_input_' + input_id"
+					:name="block_name + '_element_' + element_id + '_input_' + input_id"
+					v-model="input"
+				></textarea>
+
+			</div>
+
+		`,
+		data() {
+
+			return {
+
+				input: null
+
+			}
+
+		},
+
+		methods: {
+
+			_emit_data() {
+
+				let block_name = this.block_name
+
+				let element_id = this.element_id
+
+				let input_id = this.input_id
+
+				let type = this.type
+
+				let value = this.input
+
+				this.$emit( 'input_data', {
+					block_name: block_name,
+					element_id: element_id,
+					input_id: input_id,
+					input_type: type,
+					value: value
+				} )
+
+			}
+
+		},
+
+		watch: {
+
+			input() {
+
+				this._emit_data()
+
+			}
+
+		},
+
+		mounted() {
+
+			this.input = this.value
+
+			this._emit_data()
+
+		}
+	}
+
+)
+
+Vue.component( 'mx_multibox_element',
+
+	{
+		props: {
+
 			attrs: {
 				type: Object,
 				required: true
 			},
-			id: {
-				required: true
-			}
-		},
-
-		template: ` 
-
-			<div>
-
-				<label 
-					:for="set_id"
-				>{{ attrs.label }}</label>
-
-				<textarea
-					:id="set_id"
-					:name="set_id"
-					v-model="mx_textarea"
-					class="mx-data-input"
-				></textarea>
-
-			</div>
-		`,
-		data() {
-
-			return {
-
-				mx_textarea: null
-
-			}
-			
-		},
-		methods: {
-
-			set_value() {
-
-				if( this.attrs.value ) {
-
-					return this.attrs.value
-
-				} else {
-
-					return ''
-
-				}
-
-			},
-
-		},
-		watch: {
-
-			mx_textarea() {
-
-				let _this = this
-
-				let id = this.id + this.prefix
-
-				let _data = {
-					value: _this.mx_textarea,
-					id: id,
-					label: _this.attrs.label,
-					type: 'textarea'
-				}
-
-				this.$emit( 'data-input', _data )
-
-			}
-
-		},
-
-		computed: {			
-
-			set_id() {
-
-				if( this.attrs.value ) {
-
-					return this.attrs.id
-
-				} else {
-
-					return this.id + this.prefix
-
-				}				
-
-			},
-
-			prefix() {
-
-				return '_textarea'
-
-			}
-
-		},
-
-		mounted() {
-
-			this.mx_textarea = this.set_value()
-
-		}
-
-	} )
-
-/*
-* Main components
-*/
-// element
-Vue.component( 'multibox_element',
-	{
-		props: {
-			_attributes: {
+			block_name: {
+				type: String,
 				required: true
 			},
-			id: {
-				required: true
-			},
-			element: {
-				required: true
-			},
-			index_of_element: {
+			element_id: {
+				type: Number,
 				required: true
 			}
+
 		},
-		template: ` 
+
+		template: `
+
+		<div 
+			class="mx_multibox_element"
+			:class="'mx_element_' + element_id">
 
 			<div
-				:id="id"
-			>				
-
-				<div 
-					v-if="checkElementType"
-				>
-
-					<!-- Mount the element -->
-
-					<mx-input-text
-						v-if="_attributes.type === 'input-text'"
-						:attrs="_attributes"
-						:id="id"
-						@data-input="data_input"
-					></mx-input-text>
-
-					<mx-textarea
-						v-if="_attributes.type === 'textarea'"
-						:attrs="_attributes"
-						:id="id"
-						@data-input="data_input"
-					></mx-textarea>
-
-				</div>
-				<div 
-					class="mx-failed"
-					v-else
-				>
-
-					<h3>This type doesn't exists.</h3>
-					<b>{{_attributes}}</b>
-
-				</div>
-
-			</div>
-
-		`,
-		data() {
-			return {
-				types: [
-					'input-text',
-					'textarea'
-					
-				]
-			}
-		},
-		methods: {
-
-			data_input( _data_obj ) {
-
-				_data_obj.element = this.element
-
-				_data_obj._index = this.index_of_element
-
-				this.$emit( 'data-input', _data_obj )
-
-			}
-
-		},
-		mounted() {
-
-
-		},
-		computed: {			
-
-			checkElementType() {
-
-				if( this.types.indexOf( this._attributes.type ) !== -1 ) {
-
-					return true
-
-				}
-
-				this.$emit( 'errors', 'This type doesnt exists.' )
-
-				return false
-
-			}
-
-		}
-	}
-)
-
-// block
-Vue.component( 'multibox_block',
-	{
-		props: {
-			elements: {
-				type: Array,
-				required: true
-			},
-			saved: {
-				required: false
-			}
-		},
-		template: ` 
-
-			<div 
-				class="mx-multibox_wrap"
-				:id="elements[0]"					
+				v-for="(input, index) in attrs"
 			>
 
-				<div 
-					v-if="saved === true"					
-				>
-
-					<div
-						v-for="_index in number_of_elements"
-						:class="[_index > 1 ? 'mx-child-element' : 'mx-origin-element']"
-					>
-
-						<multibox_element
-							v-for="(element, index) in saved_block"
-							:key="index"
-							:_attributes="element"
-							v-if="typeof element !== 'string' && element.element === _index"
-							:id="element.id"
-							:element="_index"
-							@errors="set_error"
-							@data-input="set_data_input"
-							:index_of_element="index"
-						></multibox_element>
-
-					</div>					
-
-				</div>
 				<div
-					v-else					
+					v-if="inputs_types.indexOf( input.type ) != -1"
 				>
+					<component 
+						:is="'mx_' + input.type"
+						:label="input.label"
+						:type="input.type"
+						:value="input.value"
+						:block_name="block_name"
+						:element_id="parseInt( element_id )"
+						:input_id="parseInt( index )"
 
-					<div
-						class="mx-element"
-						v-for="_index in number_of_elements"
-						:class="[_index > 1 ? 'mx-child-element' : 'mx-origin-element']"
-					>
-
-						<multibox_element
-							v-for="(element, index) in elements"
-							:key="index"
-							:_attributes="element"
-							v-if="typeof element !== 'string'"
-							:id="'element_of_' + elements[0] + '_' + index + '_el_' + _index"
-							:element="_index"
-							@errors="set_error"
-							@data-input="set_data_input"
-							:index_of_element="index"
-						></multibox_element>
-
-					</div>
+						@input_data="push_input_data"
+					></component>
 
 				</div>
+				<div v-else>
 
-				<button
-					class="mx-add-block"
-					@click.prevent="add_block"
-					v-if="errors.length === 0"
-				>Add</button>
+					<h3>The "{{ input.type }}" type doesn't exists!</h3>
+
+				</div>
 
 			</div>
 
+		</div>
 		`,
 		data() {
+
 			return {
-				id: 0,
-				number_of_elements: 1,
-				errors: [],
-				block: [],
+				inputs_types: [
+					'input-text',
+					'textarea'
+				],
+				inputs: [],
 
-				saved_block: [],
-
-				_set_timeout: null,
-
-				exists_element: false,
-
-				exists_input: false
+				element_data: {}
 			}
+
 		},
 		methods: {
 
-			set_data_input( _obj ) {
+			push_input_data( _obj ) {
 
 				let _this = this
 
-				clearTimeout( _this._set_timeout )
+				this.inputs.forEach( function( v, i ) {
 
-				this._set_timeout = setTimeout( function() {
+					let _model = 'mx_input' + _obj.input_id
 
-					_this.id_element_exists( _obj.element )
+					if( Object.keys(_this.inputs[i])[0] === _model ) {
 
-					if( _this.exists_element ) {
-
-						// console.log( 'element need to update' )
-						// update element
-						_this.id_input_exists( _obj.element, _obj._index )
-
-						// check the index
-						if( _this.exists_input ) {
-
-							_this.update_input( _obj.element, _obj )
-
-							_this.exists_input = false
-
-						} else {
-
-							_this.add_input( _obj.element, _obj )
-
-						}
-
-						_this.exists_element = false
-
-					} else {
-
-						// console.log( 'create element ' )
-
-						let new_element = {
-							[_obj.element]: {
-								[_obj._index]: _obj
-							}
-						}
-
-						_this.block.push( new_element )
-
-					}			
-			
-				}, 500 )
-
-			},
-
-			update_input( element_id, _obj ) {
-
-				this.block[_obj.element][element_id][_obj._index] = _obj
-
-			},
-
-			add_input( element_id, _obj ) {
-
-				console.log( _obj )
-
-				this.block[_obj.element][element_id][_obj._index] = _obj
-
-			},
-
-			id_input_exists( element_id, input_id ) {
-
-				let _this = this
-
-				if( this.block[1][element_id] ) {
-
-					for( const [key, value] of Object.entries( this.block[element_id] ) ) {
-
-						for( const [_key, _value] of Object.entries( value ) ) {
-
-							if( parseInt( _key ) === parseInt( input_id ) ) {
-
-								_this.exists_input = true
-
-							}
-
-						}
-
-					}
-
-				}				
-
-			},
-
-			id_element_exists( _id ) {
-
-				let _this = this
-
-				this.block.forEach( function( value, index ) {
-
-					if( typeof value === 'object' ) {
-
-						for( const [_key, _value] of Object.entries( value ) ) {
-
-							if( parseInt( _key ) === parseInt( _id ) ) {
-
-								_this.exists_element = true
-
-							}
-
-						}
+						_this.inputs[i][_model] = _obj.value
 
 					}
 
 				} )
 
-			},
+				// collect input data
+				this.element_data[_obj.input_id] = {
 
-			add_block() {
-
-				this.number_of_elements += 1
-
-			},
-
-			set_error( _error ) {
-
-				this.errors.push( _error )
-
-			}, 
-
-			set_block_data() {
-
-				let _this = this			
-
-				this.block = []
-
-				this.block.push( this.saved_block[0] )
-
-				this.saved_block.forEach( function( value, index ) {
-
-					if( typeof value === 'object' ) {
-
-						// console.log(value )
-
-						// todo: create block array by saved_block array 
-
-
-
-
-
-
-
-
-
-
-
-					}
-
-				} )
-
-			},
-
-			block_init() {
-
-				let _this = this
-
-				if( this.saved === true ) {					
-
-					this.number_of_elements = 0
-
-					this.saved_block.push( this.elements[0] )
-
-					this.elements.forEach( function( value, index ) {
-
-						if( typeof value === 'object' ) {
-
-							for( const [_key, _value] of Object.entries( value ) ) {
-
-								for( const [__key, __value] of Object.entries( _value ) ) {
-
-									_this.saved_block.push( __value )
-
-								}
-
-							}
-
-							_this.number_of_elements += 1
-
-						}
-
-					} )
-
-					setTimeout( function() {
-
-						_this.set_block_data();
-
-					}, 1000 )					
-
-				} else {
-
-					this.block.push( this.elements[0] )
+					['element_' + _this.element_id]: _obj
 
 				}
 
-			}
+				this.$emit( 'element_data', this.element_data )
+
+			},
+
+			check_inputs_filed_in() {
+
+				let _this = this
+
+				let filled_in = true
+
+				this.inputs.forEach( function( v, i ) {
+
+					let _key = Object.keys( _this.inputs[i] )
+
+					if( ! _this.inputs[i][_key] ) {
+
+						filled_in = false
+
+					}
+
+				} )
+
+				return filled_in
+
+			}			
 
 		},
-		mounted() {
 
-			this.block_init()
-
-		},
 		watch: {
 
-
-			block: {
+			inputs: {
 
 				handler: function( _value ) {
 
-				 	this.$emit( 'data-output', this.block )			 					 		
+				 	let add_element = this.check_inputs_filed_in()
+
+				 	this.$emit( 'add_new_element', add_element )
 
 	            },
 
 	            deep: true
 
 			}
-		},
-		computed: {
 
-			
+		},
+
+		mounted() {
+
+			let _this = this
+
+			for ( const [key, value] of Object.entries( this.attrs ) ) {
+
+				let _model = {
+					['mx_input' + key]: null
+				}
+	
+				_this.inputs.push( _model )
+
+			}
 
 		}
 	}
+
+)
+
+Vue.component( 'mx_multibox_block',
+
+	{
+		props: {
+
+			block: {
+				type: Object,
+				required: true
+			},
+			block_name: {
+				type: String,
+				required: true
+			}
+
+		},
+
+		template: `
+			<div class="mx_multibox_block mx-multibox_wrap">
+
+				<mx_multibox_element
+
+					v-for="element in number_of_elements"
+					:attrs="block"
+					:block_name="block_name"
+					:element_id="element"
+					:key="element"
+					@add_new_element="add_new_element"
+					@element_data="push_element_data"
+
+				></mx_multibox_element>
+
+				<button
+					class="mx-add-block"
+					@click.prevent="add_element"
+					v-if="add_new"
+				>Add</button>
+
+			</div>
+		`,
+		data() {
+
+			return {
+
+				number_of_elements: 1,
+
+				add_new: false,
+
+				block_data: {}
+
+			}
+
+		},
+		methods: {
+
+			push_element_data( _obj ) {
+
+				let _this = this				
+
+				for ( const [key, value] of Object.entries( _obj ) ) {
+
+					console.log( key, value )
+
+				}
+
+				// this.block_data[_obj.input_id] = {
+
+				// 	[_this.block_name]: _obj
+
+				// }
+
+				// this.$emit( 'input_data', _obj )
+
+			},
+
+			add_new_element( _bollean ) {
+
+				this.add_new = _bollean
+
+			},
+
+			add_element() {
+
+				this.number_of_elements += 1
+
+			}
+
+		}
+
+	}
+
 )
 
 // main component
-let app = new Vue( {
+let app_element = document.getElementById( 'mx_multibox' )
 
-	el: '#mx_multibox',
-	data: {
-		multiboxes: mx_multiboxes,
+if( app_element !== null ) {
 
-		data_output: [],
+	let app = new Vue( {
 
-		saved_data: [],
+		el: '#mx_multibox',
+		data: {
 
-		exists: false,
+			multiboxes: mx_multiboxes,
 
-		metabox: mx_metabox_id,
+			errors: [],
 
-		serialized_data: mx_serialized_data,
+			blocks: {},
 
-		errors: []
-	},
-	methods: {
+			time_out: null
 
-		match_saved_data() {
+		},
+		methods: {
 
-			let _this = this
+			save_data( data ) {
 
-			this.saved_data.forEach( function( element, index ) {
+				clearTimeout( this.time_out )
 
-				let static = _this.multiboxes[index]
+				this.time_out = setTimeout( function() {
 
-				let current = element
+					console.log( data )
 
-				if( current[0] === static[0] ) {
+				}, 1000 )				
 
-					// console.log( _this.multiboxes[index], element )
+			},
 
+			parseMultiboxes() {
 
-					// todo
+				if( typeof this.multiboxes === 'object' ) {
 
-
-
-
-
-				} else {
-
-					_this.errors.push( 'Something went wrong with saved data.' )
+					this.blocks = this.multiboxes
 
 				}
 
-			} )
-
-		},
-
-		convert_data( _obj ) {
-
-			let _this = this
-
-			let json_data = JSON.stringify( _obj )
-
-			let data = {
-				action: 'mx_convert_multibox',
-				nonce: 	mx_multibox_localize.nonce,
-				data: 	json_data
 			}
 
-			jQuery.post( mx_multibox_localize.ajax_url, data, function( response ) {
+		},
 
-				jQuery( '#' + _this.metabox ).val( response )
+		watch: {
 
-			} )		
+			
 
 		},
 
-		set_data_output( _array ) {
+		mounted() {
 
-			this.id_exists( _array[0] )
-
-			if( ! this.exists ) {
-
-				this.data_output.push( _array )		
-
-			}
-
-			this.convert_data( this.data_output )
-
-		},
-
-		id_exists( _id ) {
-
-			let _incr = 0
-
-			let _this = this
-
-			this.data_output.forEach( function( value, index ) {
-
-				_incr++
-
-				if( typeof value === 'object' ) {
-
-					if( value[0] === _id ) {
-
-						_this.exists = true
-
-					}					
-
-				}
-
-			} )				
-
-		},
-
-		decode_data() {
-
-			if( this.serialized_data !== '' ) {
-
-				let _this = this
-
-				let data = {
-					action: 			'mx_decode_multibox',
-					nonce: 				mx_multibox_localize.nonce,
-					serialized_data: 	_this.serialized_data
-				}
-
-				jQuery.post( mx_multibox_localize.ajax_url, data, function( response ) {
-
-					_this.saved_data = JSON.parse( response )
-
-				} )	
-
-			}
+			this.parseMultiboxes()
 
 		}
 
-	},
+	} )
 
-	watch: {
-
-		saved_data() {
-
-			this.match_saved_data()
-
-		}
-
-	},
-
-	mounted() {
-
-		this.decode_data()
-
-	}
-
-} )
+}

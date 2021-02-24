@@ -91,82 +91,51 @@ class Mx_Multibox_Class extends Mx_Metaboxes_Class
 
 				window.mx_metabox_id = '<?php echo esc_attr( $this->args['post_meta_key'] ); ?>';
 
-				window.mx_multiboxes = [
+				window.mx_multiboxes = {
 
 					<?php foreach ( $this->args['blocks'] as $key => $block ) : ?>
 
-						[
-							'<?php echo $key; ?>',
+						/* element ... */ <?php echo $key; ?> : {	
 
-							<?php foreach ( $block as $_key => $elements ) : ?>
+							<?php $input_key = 1; ?>
 
-								{
+							<?php foreach ( $block as $_key => $inputs ) : ?>					
 
-									<?php foreach ( $elements as $__key => $element ) : ?>
+									/* input ... */ <?php echo $input_key; ?> : {
 
-										<?php echo $__key; ?>: '<?php echo $element; ?>',
+										<?php foreach ( $inputs as $__key => $input ) : ?>
 
-									<?php endforeach; ?>
+											<?php echo $__key; ?>: '<?php echo $input; ?>',				
 
-								},
+										<?php endforeach; ?>
 
-							<?php endforeach; ?>							
+										value: ''
 
-						],
+										<?php $input_key++; ?>
+
+									/* ... input */ },								
+
+							<?php endforeach; ?>
+
+						/* ... element */ },
 
 					<?php endforeach; ?>			
 
-				];
+				};
 
 			</script>
 
 			<div id="mx_multibox">
+				
+				<mx_multibox_block
 
-				<div
-					v-if="saved_data.length === 0"
-				>
+					v-for="(block, index) in blocks"
+					:block="block"
+					:block_name="index"
+					:key="index"
+					@input_data="save_data"
 
-					<multibox_block
-						v-for="(block, index) in multiboxes"
-						:elements="block"
-						:key="index"
-						@data-output="set_data_output"
-					></multibox_block>
-					
-				</div>
-				<div v-else>
-
-					<div
-						v-if="errors.length === 0"
-					>
-						
-						<multibox_block
-							v-for="(block, index) in saved_data"
-							:elements="block"
-							:key="index"
-							@data-output="set_data_output"
-						></multibox_block>	
-
-					</div>
-					<div
-						v-else
-					>
-						
-						<h2>ERROR!</h2>
-
-						<p
-							v-for="error in errors"
-							style="color: red;"
-						>
-							{{ error }}
-						</p>
-
-					</div>
-
-					<h1>Nested of elements</h1>
-									
-					
-				</div>				
+				></mx_multibox_block>
 
 			</div>
 
@@ -217,13 +186,13 @@ class Mx_Multibox_Class extends Mx_Metaboxes_Class
 		{
 
 			// Vue.js development
-			wp_enqueue_script( 'mx-vue-js', get_bloginfo( 'template_url' ) . '/inc/mx-metabox/js/vue-dev.js', [], '2', true );
+			wp_enqueue_script( 'mx-vue-js', MX_METABOXEX_URL_TO_FOLDER . '/js/vue-dev.js', [], '2', true );
 
 			// Vue.js production
-			// wp_enqueue_script( 'mx-vue-js', get_bloginfo( 'template_url' ) . '/inc/mx-metabox/js/vue-production.js', [], '2', true );
+			// wp_enqueue_script( 'mx-vue-js', MX_METABOXEX_URL_TO_FOLDER . '/js/vue-production.js', [], '2', true );
 
 			// Vue.js custom
-			wp_enqueue_script( 'mx-vue-js-custom', get_bloginfo( 'template_url' ) . '/inc/mx-metabox/js/vue-custom.js', [ 'mx-vue-js', 'jquery' ], time(), true );
+			wp_enqueue_script( 'mx-vue-js-custom', MX_METABOXEX_URL_TO_FOLDER . '/js/vue-custom.js', [ 'mx-vue-js', 'jquery' ], time(), true );
 
 			wp_localize_script( 'mx-vue-js-custom', 'mx_multibox_localize', 
 
@@ -235,7 +204,7 @@ class Mx_Multibox_Class extends Mx_Metaboxes_Class
 			);
 
 			// style 
-			wp_enqueue_style( 'mx-multibox-style', get_bloginfo( 'template_url' ) . '/inc/mx-metabox/css/multibox-style.css', [], time() ); 
+			wp_enqueue_style( 'mx-multibox-style', MX_METABOXEX_URL_TO_FOLDER . '/css/multibox-style.css', [], time() ); 
 
 		}
 

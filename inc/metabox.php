@@ -7,9 +7,9 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class Mx_Metaboxes_Class
 {
 
-	private $args = [];
+	protected $args = [];
 
-	private $defauls = [];
+	protected $defauls = [];
 
 	public function __construct( $args )
 	{

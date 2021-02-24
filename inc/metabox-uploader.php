@@ -20,7 +20,7 @@ class Mx_Metaboxes_Uploader_Class
 
 			wp_enqueue_media();
 
-			wp_enqueue_script( 'mx-image-upload', get_bloginfo( 'template_url' ) . '/inc/mx-metabox/js/uploader.js', array( 'jquery' ), time(), true );
+			wp_enqueue_script( 'mx-image-upload', MX_METABOXEX_URL_TO_FOLDER . '/js/uploader.js', array( 'jquery' ), time(), true );
 
 		}
 

@@ -1,0 +1,25 @@
+#mx_multibox label {
+	display: block;
+}
+.mx-multibox_wrap {
+	position: relative;
+}
+button.mx-add-block {
+	position: absolute;
+	bottom: 0px;
+	right: 0px;
+}
+.mx-multibox_wrap {
+	border: 1px solid #ccd0d4;
+	margin-bottom: 	15px;
+}
+.mx-multibox_wrap > div {
+	padding: 10px;
+}
+.mx-multibox_wrap > div:nth-child(2n) {
+	background: #fafafa;
+}
+.mx-failed,
+.mx-failed > * {
+	color: red;
+}

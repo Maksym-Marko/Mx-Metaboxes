@@ -1,8 +1,22 @@
 <?php 
 
-require get_template_directory() . '/mx-metabox/inc/metabox.php';
+// D:\OSPanel\domains\mx-metaboxes.local/wp-content/themes/twentytwentyone/mx-metaboxes
+if ( ! defined( 'MX_METABOXEX_PATH_TO_FOLDER' ) ) {
 
-require get_template_directory() . '/mx-metabox/inc/metabox-uploader.php';
+	define( 'MX_METABOXEX_PATH_TO_FOLDER', get_template_directory() . '/mx-metaboxes' );
+
+}
+
+// http://mx-metaboxes.local/wp-content/themes/twentytwentyone/mx-metaboxes
+if ( ! defined( 'MX_METABOXEX_URL_TO_FOLDER' ) ) {
+
+	define( 'MX_METABOXEX_URL_TO_FOLDER', get_template_directory_uri() . '/mx-metaboxes' );
+
+}
+
+require MX_METABOXEX_PATH_TO_FOLDER . '/inc/metabox.php';
+
+require MX_METABOXEX_PATH_TO_FOLDER . '/inc/metabox-uploader.php';
 
 Mx_Metaboxes_Uploader_Class::register_scrips();
 
@@ -135,12 +149,12 @@ new Mx_Metaboxes_Class(
 /**
 * multibox
 */
-require get_template_directory() . '/mx-metabox/inc/multibox.php';
+require MX_METABOXEX_PATH_TO_FOLDER . '/inc/multibox.php';
 
 	$multibox = new Mx_Multibox_Class(
 		[
 			'id'			=> 'text-metabox-multibox',
-			'post_types' 	=> 'page',
+			'post_types' 	=> 'post',
 			'name'			=> esc_html( 'MultiBox', 'mx-domain' ),
 			'blocks' 		=> [
 

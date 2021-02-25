@@ -15,28 +15,28 @@ class Mx_Multibox_Class extends Mx_Metaboxes_Class
 		add_action( 'wp_ajax_mx_convert_multibox', [$this, 'mx_convert_multibox'] );
 
 		// decode
-		add_action( 'wp_ajax_mx_decode_multibox', [$this, 'mx_decode_multibox'] );
+		// add_action( 'wp_ajax_mx_decode_multibox', [$this, 'mx_decode_multibox'] );
 
 	}
 
 		public function mx_decode_multibox()
 		{
 
-			if( empty( $_POST['nonce'] ) ) wp_die();
+			// if( empty( $_POST['nonce'] ) ) wp_die();
 
-			if( wp_verify_nonce( $_POST['nonce'], 'mx_nonce_multibox' ) ) {
+			// if( wp_verify_nonce( $_POST['nonce'], 'mx_nonce_multibox' ) ) {
 
-				$data_to_decode = str_replace( '\\', '', $_POST['serialized_data'] );
+			// 	$data_to_decode = str_replace( '\\', '', $_POST['serialized_data'] );
 
-				$unserialized_data = maybe_unserialize( $data_to_decode );
+			// 	$unserialized_data = maybe_unserialize( $data_to_decode );
 
-				$json_data = json_encode( $unserialized_data );
+			// 	$json_data = json_encode( $unserialized_data );
 
-				echo $json_data;
+			// 	echo $json_data;
 
-				wp_die();
+			// 	wp_die();
 
-			}
+			// }
 
 		}
 
@@ -47,11 +47,7 @@ class Mx_Multibox_Class extends Mx_Metaboxes_Class
 
 			if( wp_verify_nonce( $_POST['nonce'], 'mx_nonce_multibox' ) ) {
 
-				$input_data = str_replace( '\\', '', $_POST['data'] );
-
-				$json_data = json_decode( $input_data );
-
-				$serialized_data = maybe_serialize( $json_data );
+				$serialized_data = maybe_serialize( $_POST['data'] );
 
 				echo $serialized_data;
 
@@ -133,7 +129,7 @@ class Mx_Multibox_Class extends Mx_Metaboxes_Class
 					:block="block"
 					:block_name="index"
 					:key="index"
-					@input_data="save_data"
+					@block_data="save_data"
 
 				></mx_multibox_block>
 

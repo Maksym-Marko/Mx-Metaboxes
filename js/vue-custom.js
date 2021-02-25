@@ -307,11 +307,9 @@ Vue.component( 'mx_multibox_element',
 				} )
 
 				// collect input data
-				this.element_data[_obj.input_id] = {
+				this.element_data[_obj.input_id] = _obj
 
-					['element_' + _this.element_id]: _obj
-
-				}
+				// console.log( this.element_data )
 
 				this.$emit( 'element_data', this.element_data )
 
@@ -434,21 +432,26 @@ Vue.component( 'mx_multibox_block',
 
 			push_element_data( _obj ) {
 
-				let _this = this				
+				let _this = this
 
 				for ( const [key, value] of Object.entries( _obj ) ) {
 
-					console.log( key, value )
+
+					if( typeof this.block_data[value.block_name] !== 'object'  ) {
+
+						_this.block_data[value.block_name] = {}
+
+						_this.block_data[value.block_name][value.element_id] = _obj
+
+					} else {
+
+						_this.block_data[value.block_name][value.element_id] = _obj
+
+					}
 
 				}
 
-				// this.block_data[_obj.input_id] = {
-
-				// 	[_this.block_name]: _obj
-
-				// }
-
-				// this.$emit( 'input_data', _obj )
+				this.$emit( 'block_data', this.block_data )
 
 			},
 
@@ -486,28 +489,92 @@ if( app_element !== null ) {
 
 			blocks: {},
 
-			time_out: null
+			time_out: null,
+
+			save_data_input_id: mx_metabox_id,
+
+			blocks_output_data: {},
+
+			get_data_from_db: mx_serialized_data
 
 		},
 		methods: {
 
-			save_data( data ) {
+			save_data( data ) {				
 
+				let _this = this
+
+				// enter the block
+				for ( const [key, value] of Object.entries( data ) ) {
+
+					if( typeof _this.blocks_output_data[key] !== 'object'  ) {
+
+						_this.blocks_output_data[key] = {} // create a block
+
+						// enter the element
+						for ( const [_key, _value] of Object.entries( value ) ) {
+
+							_this.blocks_output_data[key][_key] = _value // create and fill in an element
+
+						}
+
+					} else {
+
+						// enter the element
+						for ( const [_key, _value] of Object.entries( value ) ) {
+
+							_this.blocks_output_data[key][_key] = _value // create and fill in an element
+
+						}
+
+					}
+
+				}
+
+				// save data to the input
 				clearTimeout( this.time_out )
 
 				this.time_out = setTimeout( function() {
 
-					console.log( data )
+					let data = {
 
-				}, 1000 )				
+						action: 'mx_convert_multibox',
+						nonce: mx_multibox_localize.nonce,
+						data:  _this.blocks_output_data
+
+					}
+
+					jQuery.post( mx_multibox_localize.ajax_url, data, function( response ) {
+
+						jQuery( '#' + _this.save_data_input_id ).val( response )
+
+					} );
+
+				}, 500 )				
 
 			},
 
-			parseMultiboxes() {
+			init_multibox() {
 
 				if( typeof this.multiboxes === 'object' ) {
 
 					this.blocks = this.multiboxes
+
+				}
+
+			},
+
+			get_saved_data() {
+
+				if( this.get_data_from_db ) {
+
+					let _this = this
+
+					setTimeout( function() {
+
+						console.log( _this.get_data_from_db )
+
+					},1000 )					
 
 				}
 
@@ -523,7 +590,11 @@ if( app_element !== null ) {
 
 		mounted() {
 
-			this.parseMultiboxes()
+			// init
+			this.init_multibox()
+
+			// get data if exists
+			this.get_saved_data()
 
 		}
 

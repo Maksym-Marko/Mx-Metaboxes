@@ -1,232 +1,5 @@
-// input-text
-Vue.component( 'mx_input-text',
 
-	{
-		props: {
-
-			type: {
-				type: String,
-				required: true
-			},
-
-			block_name: {
-				type: String,
-				required: true
-			},
-
-			element_id: {
-				type: Number,
-				required: true
-			},
-
-			input_id: {
-				type: Number,
-				required: true
-			},
-
-			label: {
-				type: String,
-				required: true
-			},
-
-			value: {
-				type: String,
-				required: false
-			}
-
-		},
-
-		template: `
-
-			<div
-				:class="'mx_' + type"
-			>
-
-				<label :for="block_name + '_element_' + element_id + '_input_' + input_id">{{ label }}</label>
-				<input
-					type="text"
-					:id="block_name + '_element_' + element_id + '_input_' + input_id"
-					:name="block_name + '_element_' + element_id + '_input_' + input_id"
-					v-model="input"
-				/>
-
-			</div>
-
-		`,
-		data() {
-
-			return {
-
-				input: null
-
-			}
-
-		},
-
-		methods: {
-
-			_emit_data() {
-
-				let block_name = this.block_name
-
-				let element_id = this.element_id
-
-				let input_id = this.input_id
-
-				let type = this.type
-
-				let value = this.input
-
-				let label = this.label
-
-				this.$emit( 'input_data', {
-					block_name: block_name,
-					element_id: element_id,
-					input_id: input_id,
-					input_type: type,
-					value: value,
-					label: label
-				} )
-
-			}
-
-		},
-
-		watch: {
-
-			input() {
-
-				this._emit_data()
-
-			}
-
-		},
-
-		mounted() {
-
-			this.input = this.value
-
-			this._emit_data()
-
-		}
-	}
-
-)
-
-// textarea
-Vue.component( 'mx_textarea',
-
-	{
-		props: {
-
-			type: {
-				type: String,
-				required: true
-			},
-
-			block_name: {
-				type: String,
-				required: true
-			},
-
-			element_id: {
-				type: Number,
-				required: true
-			},
-
-			input_id: {
-				type: Number,
-				required: true
-			},
-
-			label: {
-				type: String,
-				required: true
-			},
-
-			value: {
-				type: String,
-				required: false
-			}
-
-		},
-
-		template: `
-
-			<div
-				:class="'mx_' + type"
-			>
-				<label :for="block_name + '_element_' + element_id + '_input_' + input_id">{{ label }}</label>
-				<textarea
-					:id="block_name + '_element_' + element_id + '_input_' + input_id"
-					:name="block_name + '_element_' + element_id + '_input_' + input_id"
-					v-model="input"
-				></textarea>
-
-			</div>
-
-		`,
-		data() {
-
-			return {
-
-				input: null
-
-			}
-
-		},
-
-		methods: {
-
-			_emit_data() {
-
-				let block_name = this.block_name
-
-				let element_id = this.element_id
-
-				let input_id = this.input_id
-
-				let type = this.type
-
-				let value = this.input
-
-				let label = this.label
-
-				this.$emit( 'input_data', {
-					block_name: block_name,
-					element_id: element_id,
-					input_id: input_id,
-					input_type: type,
-					value: value,
-					label: label
-				} )
-
-			}
-
-		},
-
-		watch: {
-
-			input() {
-
-				this._emit_data()
-
-			}
-
-		},
-
-		mounted() {
-
-			this.input = this.value
-
-			this._emit_data()
-
-		}
-	}
-
-)
-
-Vue.component( 'mx_multibox_element',
+Vue.component( 'mx_multibox_element_saved',
 
 	{
 		props: {
@@ -257,12 +30,12 @@ Vue.component( 'mx_multibox_element',
 			>
 
 				<div
-					v-if="inputs_types.indexOf( input.type ) != -1"
+					v-if="inputs_types.indexOf( input.input_type ) != -1"
 				>
 					<component 
-						:is="'mx_' + input.type"
+						:is="'mx_' + input.input_type"
 						:label="input.label"
-						:type="input.type"
+						:type="input.input_type"
 						:value="input.value"
 						:block_name="block_name"
 						:element_id="parseInt( element_id )"
@@ -274,7 +47,7 @@ Vue.component( 'mx_multibox_element',
 				</div>
 				<div v-else>
 
-					<h3>The "{{ input.type }}" type doesn't exists!</h3>
+					<h3>The "{{ input.input_type }}" type doesn't exists!</h3>
 
 				</div>
 
@@ -383,7 +156,7 @@ Vue.component( 'mx_multibox_element',
 
 )
 
-Vue.component( 'mx_multibox_block',
+Vue.component( 'mx_multibox_block_saved',
 
 	{
 		props: {
@@ -402,17 +175,30 @@ Vue.component( 'mx_multibox_block',
 		template: `
 			<div class="mx_multibox_block mx-multibox_wrap">
 
-				<mx_multibox_element
+				<mx_multibox_element_saved
 
 					v-for="element in number_of_elements"
-					:attrs="block"
+					:attrs="block[element]"
 					:block_name="block_name"
 					:element_id="element"
 					:key="element"
 					@add_new_element="add_new_element"
 					@element_data="push_element_data"
 
-				></mx_multibox_element>
+				></mx_multibox_element_saved>
+
+				<mx_multibox_element_saved
+
+					v-if="number_of_additional_elements > 0"
+					v-for="element in number_of_additional_elements"
+					:attrs="block_patern"
+					:block_name="block_name"
+					:element_id="number_of_additional_elements + number_of_elements"
+					:key="number_of_additional_elements + number_of_elements"
+					@add_new_element="add_new_element"
+					@element_data="push_element_data"
+
+				></mx_multibox_element_saved>
 
 				<button
 					class="mx-add-block"
@@ -428,7 +214,11 @@ Vue.component( 'mx_multibox_block',
 
 				number_of_elements: 1,
 
+				number_of_additional_elements: 0,
+
 				add_new: false,
+
+				block_patern: {},
 
 				block_data: {}
 
@@ -436,6 +226,20 @@ Vue.component( 'mx_multibox_block',
 
 		},
 		methods: {
+
+			_obj_size( obj ) {
+
+			  let size = 0
+
+			  for ( const key in obj ) {
+
+			    if ( obj.hasOwnProperty( key ) ) size++
+
+			  }
+
+			  return size
+
+			},
 
 			push_element_data( _obj ) {
 
@@ -470,9 +274,44 @@ Vue.component( 'mx_multibox_block',
 
 			add_element() {
 
-				this.number_of_elements += 1
+				this.number_of_additional_elements += 1
+
+			},
+
+			set_number_of_elements() {
+
+				this.number_of_elements = this._obj_size( this.block )
+
+			},
+
+			set_block_patern() {
+
+				// block_patern
+				this.block_patern = this.block[1]
+
+				for ( const [key, value] of Object.entries( this.block_patern ) ) {
+
+					delete this.block_patern[key]['block_name']
+
+					delete this.block_patern[key]['element_id']
+
+					delete this.block_patern[key]['input_id']
+
+					this.block_patern[key]['value'] = ''
+
+				}
 
 			}
+
+		},
+
+		mounted() {
+
+			// set number of elements
+			this.set_number_of_elements()
+
+			// set block patern
+			this.set_block_patern()
 
 		}
 
@@ -481,16 +320,14 @@ Vue.component( 'mx_multibox_block',
 )
 
 // main component
-let app_element = document.getElementById( 'mx_multibox_init' )
+let app_element_saved = document.getElementById( 'mx_multibox_saved' )
 
-if( app_element !== null ) {
+if( app_element_saved !== null ) {
 
 	let app = new Vue( {
 
-		el: '#mx_multibox_init',
+		el: '#mx_multibox_saved',
 		data: {
-
-			multiboxes: mx_multiboxes,
 
 			errors: [],
 
@@ -500,7 +337,9 @@ if( app_element !== null ) {
 
 			save_data_input_id: mx_metabox_id,
 
-			blocks_output_data: {}
+			blocks_output_data: {},
+
+			get_data_from_db: mx_serialized_data
 
 		},
 		methods: {
@@ -559,28 +398,59 @@ if( app_element !== null ) {
 
 			},
 
-			init_multibox() {
+			get_saved_data() {
 
-				if( typeof this.multiboxes === 'object' ) {
+				if( this.get_data_from_db ) {
 
-					this.blocks = this.multiboxes
+					let _this = this
+
+					setTimeout( function() {
+
+						let data = {
+
+							action: 'mx_decode_multibox',
+							nonce: mx_multibox_localize.nonce,
+							data:  _this.get_data_from_db
+
+						}
+
+						jQuery.post( mx_multibox_localize.ajax_url, data, function( response ) {
+
+							if( _this.isJSON( response ) ) {
+
+								let saved_obj = JSON.parse( response )
+
+								_this.blocks = saved_obj		
+
+							} else {
+
+								_this.errors.push( 'JSON.pars error!' )
+
+							}					
+
+						} );						
+
+					},1000 )					
 
 				}
 
-			}
+			},
 
-		},
-
-		watch: {
-
-			
+			isJSON( str ) {
+				try {
+			        JSON.parse(str);
+			    } catch (e) {
+			        return false;
+			    }
+			    return true;
+			},
 
 		},
 
 		mounted() {
 
-			// init
-			this.init_multibox()
+			// get data if exists
+			this.get_saved_data()
 
 		}
 

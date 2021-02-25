@@ -15,28 +15,28 @@ class Mx_Multibox_Class extends Mx_Metaboxes_Class
 		add_action( 'wp_ajax_mx_convert_multibox', [$this, 'mx_convert_multibox'] );
 
 		// decode
-		// add_action( 'wp_ajax_mx_decode_multibox', [$this, 'mx_decode_multibox'] );
+		add_action( 'wp_ajax_mx_decode_multibox', [$this, 'mx_decode_multibox'] );
 
 	}
 
 		public function mx_decode_multibox()
 		{
 
-			// if( empty( $_POST['nonce'] ) ) wp_die();
+			if( empty( $_POST['nonce'] ) ) wp_die();
 
-			// if( wp_verify_nonce( $_POST['nonce'], 'mx_nonce_multibox' ) ) {
+			if( wp_verify_nonce( $_POST['nonce'], 'mx_nonce_multibox' ) ) {
 
-			// 	$data_to_decode = str_replace( '\\', '', $_POST['serialized_data'] );
+				$data_to_decode = str_replace( '\\', '', $_POST['data'] );
 
-			// 	$unserialized_data = maybe_unserialize( $data_to_decode );
+				$unserialized_data = maybe_unserialize( $data_to_decode );
 
-			// 	$json_data = json_encode( $unserialized_data );
+				$json_data = json_encode( $unserialized_data );
 
-			// 	echo $json_data;
+				echo $json_data;
 
-			// 	wp_die();
+				wp_die();
 
-			// }
+			}
 
 		}
 
@@ -121,19 +121,57 @@ class Mx_Multibox_Class extends Mx_Metaboxes_Class
 
 			</script>
 
-			<div id="mx_multibox">
-				
-				<mx_multibox_block
+			<?php
 
-					v-for="(block, index) in blocks"
-					:block="block"
-					:block_name="index"
-					:key="index"
-					@block_data="save_data"
+			 if( $meta_value == '' ) : ?>
 
-				></mx_multibox_block>
+				<!-- empty data -->
+				<div id="mx_multibox_init">
+					
+					<mx_multibox_block
 
-			</div>
+						v-for="(block, index) in blocks"
+						:block="block"
+						:block_name="index"
+						:key="index"
+						@block_data="save_data"
+
+					></mx_multibox_block>
+
+				</div>
+
+			<?php else : ?>
+
+				<!-- saved data -->			
+				<div id="mx_multibox_saved">
+					
+					<div
+						v-if="errors.length === 0"
+					>
+
+						<mx_multibox_block_saved
+
+							v-for="(block, index) in blocks"
+							:block="block"
+							:block_name="index"
+							:key="index"
+							@block_data="save_data"
+
+						></mx_multibox_block_saved>
+
+					</div>
+					<div
+						v-else
+					>
+
+						{{ errors }}
+						
+					</div>
+
+				</div>
+
+			<?php endif; ?>
+
 
 			<input 
 				type="text" id="<?php echo esc_attr( $this->args['post_meta_key'] ); ?>"
@@ -188,9 +226,12 @@ class Mx_Multibox_Class extends Mx_Metaboxes_Class
 			// wp_enqueue_script( 'mx-vue-js', MX_METABOXEX_URL_TO_FOLDER . '/js/vue-production.js', [], '2', true );
 
 			// Vue.js custom
-			wp_enqueue_script( 'mx-vue-js-custom', MX_METABOXEX_URL_TO_FOLDER . '/js/vue-custom.js', [ 'mx-vue-js', 'jquery' ], time(), true );
+			wp_enqueue_script( 'mx-vue-js-custom-init', MX_METABOXEX_URL_TO_FOLDER . '/js/vue-custom.js', [ 'mx-vue-js', 'jquery' ], time(), true );
 
-			wp_localize_script( 'mx-vue-js-custom', 'mx_multibox_localize', 
+			// there is a data
+			wp_enqueue_script( 'mx-vue-js-custom-saved', MX_METABOXEX_URL_TO_FOLDER . '/js/vue-custom-saved.js', [ 'mx-vue-js', 'jquery', 'mx-vue-js-custom-init' ], time(), true );
+
+			wp_localize_script( 'mx-vue-js-custom-init', 'mx_multibox_localize', 
 
 				[
 					'ajax_url' 			=> admin_url( 'admin-ajax.php' ),

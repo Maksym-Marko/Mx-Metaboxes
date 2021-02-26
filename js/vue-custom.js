@@ -106,8 +106,6 @@ Vue.component( 'mx_input-text',
 
 			this.input = this.value
 
-			this._emit_data()
-
 		}
 	}
 
@@ -218,8 +216,6 @@ Vue.component( 'mx_textarea',
 		mounted() {
 
 			this.input = this.value
-
-			this._emit_data()
 
 		}
 	}

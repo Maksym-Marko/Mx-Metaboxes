@@ -178,23 +178,10 @@ Vue.component( 'mx_multibox_block_saved',
 				<mx_multibox_element_saved
 
 					v-for="element in number_of_elements"
-					:attrs="block[element]"
+					:attrs="set_attrs( block[element] )"
 					:block_name="block_name"
 					:element_id="element"
 					:key="element"
-					@add_new_element="add_new_element"
-					@element_data="push_element_data"
-
-				></mx_multibox_element_saved>
-
-				<mx_multibox_element_saved
-
-					v-if="number_of_additional_elements > 0"
-					v-for="element in number_of_additional_elements"
-					:attrs="block_patern"
-					:block_name="block_name"
-					:element_id="number_of_additional_elements + number_of_elements"
-					:key="number_of_additional_elements + number_of_elements"
 					@add_new_element="add_new_element"
 					@element_data="push_element_data"
 
@@ -214,7 +201,6 @@ Vue.component( 'mx_multibox_block_saved',
 
 				number_of_elements: 1,
 
-				number_of_additional_elements: 0,
 
 				add_new: false,
 
@@ -226,6 +212,18 @@ Vue.component( 'mx_multibox_block_saved',
 
 		},
 		methods: {
+
+			set_attrs( block ) {
+
+				if( block ) {
+
+					return block
+
+				}
+
+				return this.block_patern
+
+			},
 
 			_obj_size( obj ) {
 
@@ -274,7 +272,7 @@ Vue.component( 'mx_multibox_block_saved',
 
 			add_element() {
 
-				this.number_of_additional_elements += 1
+				this.number_of_elements += 1
 
 			},
 

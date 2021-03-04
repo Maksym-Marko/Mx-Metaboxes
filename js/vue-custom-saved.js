@@ -239,7 +239,7 @@ Vue.component( 'mx_multibox_block_saved',
 
 				this.number_of_elements -= 1
 
-				this.block_data = {}
+				this.block_data[this.block_name] = {}
 
 			},
 
@@ -302,6 +302,8 @@ Vue.component( 'mx_multibox_block_saved',
 
 			add_element() {
 
+				this.set_block_patern()
+
 				this.number_of_elements += 1
 
 			},
@@ -314,20 +316,24 @@ Vue.component( 'mx_multibox_block_saved',
 
 			set_block_patern() {
 
-				// block_patern
-				this.block_patern = this.block[1]
+				if( Object.keys( this.block_patern ).length === 0 ) {
 
-				for ( const [key, value] of Object.entries( this.block_patern ) ) {
+					// block_patern
+					this.block_patern = this.block[1]
 
-					delete this.block_patern[key]['block_name']
+					for ( const [key, value] of Object.entries( this.block_patern ) ) {
 
-					delete this.block_patern[key]['element_id']
+						delete this.block_patern[key]['block_name']
 
-					delete this.block_patern[key]['input_id']
+						delete this.block_patern[key]['element_id']
 
-					this.block_patern[key]['value'] = ''
+						delete this.block_patern[key]['input_id']
 
-				}
+						this.block_patern[key]['value'] = ''
+
+					}
+
+				}	
 
 			}
 
@@ -405,15 +411,14 @@ if( app_element_saved !== null ) {
 
 				_this.blocks[el_data.block_name] = {}
 
-				delete _this.blocks_output_data[el_data.block_name]
+				_this.blocks_output_data[el_data.block_name] = {}
 
 				// reset
 				setTimeout( function() {
 
 					_this.blocks[el_data.block_name] = new_block
 
-				},100 )				
-
+				},100 )
 
 			},
 
@@ -461,11 +466,11 @@ if( app_element_saved !== null ) {
 
 					}
 
-					console.log( _this.blocks_output_data )
-
 					jQuery.post( mx_multibox_localize.ajax_url, data, function( response ) {
 
 						jQuery( '#' + _this.save_data_input_id ).val( response )
+
+						// console.log( response )
 
 					} );
 

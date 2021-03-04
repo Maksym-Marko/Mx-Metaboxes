@@ -157,6 +157,8 @@ class Mx_Multibox_Class extends Mx_Metaboxes_Class
 							:key="index"
 							@block_data="save_data"
 
+							@delete_element="remove_element"
+
 						></mx_multibox_block_saved>
 
 					</div>

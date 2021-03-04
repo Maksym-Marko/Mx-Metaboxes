@@ -15,6 +15,10 @@ Vue.component( 'mx_multibox_element_saved',
 			element_id: {
 				type: Number,
 				required: true
+			},
+			number_of_elements: {
+				type: Number,
+				required: true
 			}
 
 		},
@@ -53,6 +57,11 @@ Vue.component( 'mx_multibox_element_saved',
 
 			</div>
 
+			<button
+				v-if="number_of_elements > 1"
+				@click.prevent="remove_element"
+			>Del</button>
+
 		</div>
 		`,
 		data() {
@@ -70,6 +79,17 @@ Vue.component( 'mx_multibox_element_saved',
 		},
 		methods: {
 
+			remove_element() {
+
+				let el_data = {
+					block_name: this.block_name,
+					element_id: this.element_id
+				}
+
+				this.$emit( 'delete_element', el_data )				
+
+			},
+
 			push_input_data( _obj ) {
 
 				let _this = this
@@ -78,7 +98,7 @@ Vue.component( 'mx_multibox_element_saved',
 
 					let _model = 'mx_input' + _obj.input_id
 
-					if( Object.keys(_this.inputs[i])[0] === _model ) {
+					if( Object.keys( _this.inputs[i] )[0] === _model ) {
 
 						_this.inputs[i][_model] = _obj.value
 
@@ -88,8 +108,6 @@ Vue.component( 'mx_multibox_element_saved',
 
 				// collect input data
 				this.element_data[_obj.input_id] = _obj
-
-				// console.log( this.element_data )
 
 				this.$emit( 'element_data', this.element_data )
 
@@ -182,10 +200,13 @@ Vue.component( 'mx_multibox_block_saved',
 					:block_name="block_name"
 					:element_id="element"
 					:key="element"
+					:number_of_elements="number_of_elements"
 					@add_new_element="add_new_element"
 					@element_data="push_element_data"
 
-				></mx_multibox_element_saved>
+					@delete_element="remove_element"
+
+				></mx_multibox_element_saved>				
 
 				<button
 					class="mx-add-block"
@@ -201,7 +222,6 @@ Vue.component( 'mx_multibox_block_saved',
 
 				number_of_elements: 1,
 
-
 				add_new: false,
 
 				block_patern: {},
@@ -212,6 +232,16 @@ Vue.component( 'mx_multibox_block_saved',
 
 		},
 		methods: {
+
+			remove_element( el_data ) {
+
+				this.$emit( 'delete_element', el_data )
+
+				this.number_of_elements -= 1
+
+				this.block_data = {}
+
+			},
 
 			set_attrs( block ) {
 
@@ -303,13 +333,17 @@ Vue.component( 'mx_multibox_block_saved',
 
 		},
 
+		beforeMount() {
+
+			// set block patern
+			// this.set_block_patern()
+
+		},
+
 		mounted() {
 
 			// set number of elements
-			this.set_number_of_elements()
-
-			// set block patern
-			this.set_block_patern()
+			this.set_number_of_elements()			
 
 		}
 
@@ -342,8 +376,49 @@ if( app_element_saved !== null ) {
 		},
 		methods: {
 
-			save_data( data ) {				
+			remove_element( el_data ) {
 
+				/**
+				* remove from main block
+				*/
+				delete this.blocks[el_data.block_name][el_data.element_id]
+
+				let _this = this
+
+				for ( const [key, value] of Object.entries( this.blocks[el_data.block_name] ) ) {
+
+					if( key > el_data.element_id ) {
+
+						let new_obj = value
+
+						delete _this.blocks[el_data.block_name][key]
+
+						_this.blocks[el_data.block_name][key-1] = new_obj
+
+						let _key = key-1
+
+					}
+
+				}
+
+				let new_block = _this.blocks[el_data.block_name]
+
+				_this.blocks[el_data.block_name] = {}
+
+				delete _this.blocks_output_data[el_data.block_name]
+
+				// reset
+				setTimeout( function() {
+
+					_this.blocks[el_data.block_name] = new_block
+
+				},100 )				
+
+
+			},
+
+			save_data( data ) {
+	
 				let _this = this
 
 				// enter the block
@@ -385,6 +460,8 @@ if( app_element_saved !== null ) {
 						data:  _this.blocks_output_data
 
 					}
+
+					console.log( _this.blocks_output_data )
 
 					jQuery.post( mx_multibox_localize.ajax_url, data, function( response ) {
 

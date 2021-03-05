@@ -237,10 +237,6 @@ Vue.component( 'mx_multibox_block_saved',
 
 				this.$emit( 'delete_element', el_data )
 
-				this.number_of_elements -= 1
-
-				this.block_data[this.block_name] = {}
-
 			},
 
 			set_attrs( block ) {
@@ -306,6 +302,8 @@ Vue.component( 'mx_multibox_block_saved',
 
 				this.number_of_elements += 1
 
+				this.$emit( 'add_element_to_block', this.block_data, this.block_name )
+
 			},
 
 			set_number_of_elements() {
@@ -318,18 +316,15 @@ Vue.component( 'mx_multibox_block_saved',
 
 				if( Object.keys( this.block_patern ).length === 0 ) {
 
-					// block_patern
-					this.block_patern = this.block[1]
+					for ( const [key, value] of Object.entries( this.block[1] ) ) {
 
-					for ( const [key, value] of Object.entries( this.block_patern ) ) {
+						this.block_patern[key] 						= {}
 
-						delete this.block_patern[key]['block_name']
+							this.block_patern[key]['value'] 		= ""
 
-						delete this.block_patern[key]['element_id']
+							this.block_patern[key]['input_type'] 	= value['input_type']
 
-						delete this.block_patern[key]['input_id']
-
-						this.block_patern[key]['value'] = ''
+							this.block_patern[key]['label'] 		= value['label']
 
 					}
 
@@ -339,17 +334,13 @@ Vue.component( 'mx_multibox_block_saved',
 
 		},
 
-		beforeMount() {
-
-			// set block patern
-			// this.set_block_patern()
-
-		},
-
 		mounted() {
 
 			// set number of elements
-			this.set_number_of_elements()			
+			this.set_number_of_elements()
+
+			// set block patern
+			this.set_block_patern()		
 
 		}
 
@@ -377,17 +368,25 @@ if( app_element_saved !== null ) {
 
 			blocks_output_data: {},
 
-			get_data_from_db: mx_serialized_data
+			get_data_from_db: mx_serialized_data,
+
+			incr: 0
 
 		},
 		methods: {
+
+			add_element_to_block( new_block, block_name ) {
+
+				this.blocks[block_name] = new_block[block_name]
+
+			},
 
 			remove_element( el_data ) {
 
 				/**
 				* remove from main block
 				*/
-				delete this.blocks[el_data.block_name][el_data.element_id]
+				delete this.blocks[el_data.block_name][el_data.element_id]				
 
 				let _this = this
 
@@ -395,13 +394,11 @@ if( app_element_saved !== null ) {
 
 					if( key > el_data.element_id ) {
 
-						let new_obj = value
-
 						delete _this.blocks[el_data.block_name][key]
 
-						_this.blocks[el_data.block_name][key-1] = new_obj
-
 						let _key = key-1
+
+						_this.blocks[el_data.block_name][_key] = value						
 
 					}
 
@@ -415,6 +412,8 @@ if( app_element_saved !== null ) {
 
 				// reset
 				setTimeout( function() {
+
+					_this.incr += 1
 
 					_this.blocks[el_data.block_name] = new_block
 

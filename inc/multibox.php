@@ -154,8 +154,9 @@ class Mx_Multibox_Class extends Mx_Metaboxes_Class
 							v-for="(block, index) in blocks"
 							:block="block"
 							:block_name="index"
-							:key="index"
+							:key="index + incr"
 							@block_data="save_data"
+							@add_element_to_block="add_element_to_block"
 
 							@delete_element="remove_element"
 

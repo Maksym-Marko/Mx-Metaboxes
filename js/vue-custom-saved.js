@@ -370,6 +370,10 @@ if( app_element_saved !== null ) {
 
 			time_out: null,
 
+			time_out_main_block: null,
+
+			time_out_output_block: null,
+
 			save_data_input_id: mx_metabox_id,
 
 			blocks_output_data: {},
@@ -390,6 +394,8 @@ if( app_element_saved !== null ) {
 			},
 
 			remove_element( el_data ) {
+
+
 
 				/**
 				* remove from main block
@@ -429,36 +435,19 @@ if( app_element_saved !== null ) {
 
 			},
 
-			save_data( data ) {
+			save_data( data ) {				
 	
 				let _this = this
 
-				// enter the block
-				for ( const [key, value] of Object.entries( data ) ) {
+				/*
+				* Save data into main block
+				*/
+				this.save_data_into_main_block( data )
 
-					if( typeof _this.blocks_output_data[key] !== 'object'  ) {
-
-						_this.blocks_output_data[key] = {} // create a block
-
-						// enter the element
-						for ( const [_key, _value] of Object.entries( value ) ) {
-
-							_this.blocks_output_data[key][_key] = _value // create and fill in an element
-
-						}
-
-					} else {
-
-						// enter the element
-						for ( const [_key, _value] of Object.entries( value ) ) {
-
-							_this.blocks_output_data[key][_key] = _value // create and fill in an element
-
-						}
-
-					}
-
-				}
+				/*
+				* Save data into output block
+				*/
+				this.save_data_into_output_block( data )
 
 				// save data to the input
 				clearTimeout( this.time_out )
@@ -482,9 +471,95 @@ if( app_element_saved !== null ) {
 
 					} );
 
-				}, 500 )				
+				}, 700 )				
 
 			},
+
+				// save data into main block
+				save_data_into_main_block( data ) {
+
+					let _this = this
+
+					clearTimeout( this.time_out_main_block )
+
+					this.time_out_main_block = setTimeout( function() {
+
+						console.log( 'save data into main block' )
+
+						for ( const [key, value] of Object.entries( _this.blocks ) ) {
+
+							for ( const [_key, _value] of Object.entries( data ) ) {
+
+								if( key === _key ) {							
+
+									// enter the block
+									Object.keys( _value ).forEach( function( val, index ) {
+										
+										// enter the element
+										for ( const [__key, __value] of Object.entries( _value[val] ) ) {
+
+											if( _this.blocks[_key][val][__key]['value'] !== _value[val][__key]['value'] ) {
+
+												_this.blocks[_key][val][__key]['value'] = _value[val][__key]['value']
+
+											}
+
+										}
+										
+
+									} )
+
+								}
+
+							}
+							
+						}
+
+					}, 400 )					
+
+				},
+
+				// save data into output block
+				save_data_into_output_block( data ) {
+
+					let _this = this
+
+					clearTimeout( this.time_out_output_block )
+
+					this.time_out_output_block = setTimeout( function() {
+
+						console.log( 'save data into output block' )
+
+						// enter the block
+						for ( const [key, value] of Object.entries( data ) ) {
+
+							if( typeof _this.blocks_output_data[key] !== 'object'  ) {
+
+								_this.blocks_output_data[key] = {} // create a block
+
+								// enter the element
+								for ( const [_key, _value] of Object.entries( value ) ) {
+
+									_this.blocks_output_data[key][_key] = _value // create and fill in an element
+
+								}
+
+							} else {
+
+								// enter the element
+								for ( const [_key, _value] of Object.entries( value ) ) {
+
+									_this.blocks_output_data[key][_key] = _value // create and fill in an element
+
+								}
+
+							}
+
+						}
+
+					}, 400 )					
+
+				},
 
 			get_saved_data() {
 

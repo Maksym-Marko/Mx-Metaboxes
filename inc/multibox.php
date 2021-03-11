@@ -47,7 +47,14 @@ class Mx_Multibox_Class extends Mx_Metaboxes_Class
 
 			if( wp_verify_nonce( $_POST['nonce'], 'mx_nonce_multibox' ) ) {
 
-				$serialized_data = maybe_serialize( $_POST['data'] );
+				$data_blocks = [
+
+					'blocks' 		=> $_POST['data'],
+					'section_names' => $_POST['section_names']
+
+				];
+
+				$serialized_data = maybe_serialize( $data_blocks );
 
 				echo $serialized_data;
 
@@ -91,11 +98,19 @@ class Mx_Multibox_Class extends Mx_Metaboxes_Class
 
 					<?php foreach ( $this->args['blocks'] as $key => $block ) : ?>
 
-						/* element ... */ <?php echo $key; ?> : {	
+						/* element ... */ <?php echo $key; ?> : {
 
 							<?php $input_key = 1; ?>
 
-							<?php foreach ( $block as $_key => $inputs ) : ?>					
+							<?php foreach ( $block as $_key => $inputs ) : ?>	
+
+									<?php if( isset( $inputs['section_name'] ) ) : ?>
+
+										section_name: '<?php echo $inputs['section_name']; ?>',
+
+										<?php continue; ?>
+
+									<?php endif; ?>				
 
 									/* input ... */ <?php echo $input_key; ?> : {
 
@@ -134,9 +149,13 @@ class Mx_Multibox_Class extends Mx_Metaboxes_Class
 						:block="block"
 						:block_name="index"
 						:key="index"
+						:section_names="section_names"
+						
 						@block_data="save_data"
 
 					></mx_multibox_block>
+
+					<!-- :section_name="Some section" -->
 
 				</div>
 
@@ -157,6 +176,7 @@ class Mx_Multibox_Class extends Mx_Metaboxes_Class
 							:key="index + incr"
 							@block_data="save_data"
 							@add_element_to_block="add_element_to_block"
+							:section_names="section_names"
 
 							@delete_element="remove_element"
 

@@ -391,12 +391,18 @@ Vue.component( 'mx_multibox_block',
 			block_name: {
 				type: String,
 				required: true
+			},
+			section_names: {
+				type: Object,
+				required: true
 			}
 
 		},
 
 		template: `
 			<div class="mx_multibox_block mx-multibox_wrap">
+
+				<h3>{{ section_names[block_name] }}</h3>
 
 				<mx_multibox_element
 
@@ -496,7 +502,9 @@ if( app_element !== null ) {
 
 			save_data_input_id: mx_metabox_id,
 
-			blocks_output_data: {}
+			blocks_output_data: {},
+
+			section_names: {}
 
 		},
 		methods: {
@@ -539,9 +547,10 @@ if( app_element !== null ) {
 
 					let data = {
 
-						action: 'mx_convert_multibox',
-						nonce: mx_multibox_localize.nonce,
-						data:  _this.blocks_output_data
+						action: 		'mx_convert_multibox',
+						nonce: 			mx_multibox_localize.nonce,
+						data:  			_this.blocks_output_data,
+						section_names: 	_this.section_names
 
 					}
 
@@ -559,17 +568,19 @@ if( app_element !== null ) {
 
 				if( typeof this.multiboxes === 'object' ) {
 
+					for ( const [key, value] of Object.entries( this.multiboxes ) ) {
+
+						this.section_names[key] = value['section_name']
+
+						delete this.multiboxes[key]['section_name']
+
+					}				
+
 					this.blocks = this.multiboxes
 
 				}
 
 			}
-
-		},
-
-		watch: {
-
-			
 
 		},
 

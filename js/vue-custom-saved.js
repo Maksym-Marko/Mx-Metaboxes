@@ -186,12 +186,18 @@ Vue.component( 'mx_multibox_block_saved',
 			block_name: {
 				type: String,
 				required: true
+			},
+			section_names: {
+				type: Object,
+				required: true
 			}
 
 		},
 
 		template: `
 			<div class="mx_multibox_block mx-multibox_wrap">
+
+				<h3>{{ section_names[block_name] }}</h3>
 
 				<mx_multibox_element_saved
 
@@ -370,7 +376,9 @@ if( app_element_saved !== null ) {
 
 			get_data_from_db: mx_serialized_data,
 
-			incr: 0
+			incr: 0,
+
+			section_names: {}
 
 		},
 		methods: {
@@ -461,7 +469,8 @@ if( app_element_saved !== null ) {
 
 						action: 'mx_convert_multibox',
 						nonce: mx_multibox_localize.nonce,
-						data:  _this.blocks_output_data
+						data:  _this.blocks_output_data,
+						section_names: 	_this.section_names
 
 					}
 
@@ -499,7 +508,9 @@ if( app_element_saved !== null ) {
 
 								let saved_obj = JSON.parse( response )
 
-								_this.blocks = saved_obj		
+								_this.section_names = saved_obj.section_names
+
+								_this.blocks 		= saved_obj.blocks
 
 							} else {
 

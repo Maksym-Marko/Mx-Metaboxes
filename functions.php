@@ -160,6 +160,7 @@ require MX_METABOXEX_PATH_TO_FOLDER . '/inc/multibox.php';
 
 				// block 1
 				'block_1' 		=> [
+					[ 'section_name' => 'Some section' ],
 					[
 						'type' => 'input-text',
 						'label' => esc_html( 'Enter Title', 'mx-domain' ),
@@ -172,6 +173,7 @@ require MX_METABOXEX_PATH_TO_FOLDER . '/inc/multibox.php';
 
 				// block 2
 				'block_2' 		=> [
+					[ 'section_name' => 'Some section 2' ],
 					[
 						'type' => 'input-text',
 						'label' => esc_html( 'Enter Title 2', 'mx-domain' ),
